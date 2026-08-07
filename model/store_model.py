@@ -24,6 +24,7 @@ STORES = {
     "simulacoes":       "id",
     "simCustos":        "id",
     "backupHistorico":  "id",
+    "vendedores":       "id",
 }
 
 

@@ -75,6 +75,26 @@ dentro do JSON se precisar no futuro.
 `pagamentos`, `contas`, `meta`, `tiposPassageiro`, `fornecedores`,
 `pacotes`, `reservas`, `simulacoes`, `simCustos`, `backupHistorico`.
 
+## Importar um backup existente (dados reais)
+
+Se você já tem um arquivo de backup exportado pelo ibexGo (menu **Backup → Exportar**,
+ou o `.json` que a IndexedDB antiga já continha), pode carregá-lo direto no
+PostgreSQL sem precisar recriar nada manualmente:
+
+```bash
+python scripts/importar_backup.py caminho/para/seu-backup.json
+```
+
+O script:
+1. Garante que as tabelas existem (`sql/schema.sql`);
+2. Lê o JSON (aceita tanto `{ "data": {...} }` quanto o formato antigo `{ "excursoes": [...], ... }`);
+3. Grava cada excursão, passageiro, pagamento, conta, tipo de passageiro,
+   fornecedor, pacote, reserva, simulação, custo de simulação, vendedor e
+   registro do histórico de backup como uma linha em `store_items`.
+
+Depois de rodar, é só abrir **http://localhost:3000** — o app volta a mostrar
+seus dados normalmente, agora vindos do PostgreSQL.
+
 ## Como rodar
 
 1. Tenha um PostgreSQL rodando e crie o banco:
