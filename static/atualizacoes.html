@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!-- ARQUIVO: ibexgo/atualizacoes.html -->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ibexGo — Novidades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --blue:#14539B; --blue-2:#056CF2; --gold:#F2B807; --white:#FFFFFF; --bg:#F6F8FB;
+    --dark:#172033; --gray:#667085; --green:#12B76A; --red:#F04438;
+    --orange:#F79009; --border:#E4E7EC; --soft-blue:#EAF2FB; --soft-green:#E8F8F0;
+    --shadow:0 1px 4px rgba(20,40,80,.07),0 4px 16px rgba(20,40,80,.06);
+    --radius:14px; --radius-sm:9px;
+  }
+  body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--dark);line-height:1.55;padding:32px 16px 80px}
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px}
+  .brand{font-size:22px;font-weight:800;letter-spacing:-.02em}.brand b{color:var(--blue)}.brand .arrow{color:var(--gold)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--radius-sm);font-weight:700;font-size:14px;text-decoration:none;border:1.5px solid var(--border);background:var(--white);color:var(--dark);transition:opacity .15s, transform .15s}.btn:hover{opacity:.9;transform:translateY(-1px)}
+  .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .hero{background:linear-gradient(135deg,#fff 0%,#EEF5FF 100%);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;right:-60px;top:-70px;width:210px;height:210px;border-radius:999px;background:rgba(242,184,7,.22)}
+  h1{font-size:32px;margin-bottom:8px;letter-spacing:-.04em;position:relative;z-index:1}.subtitle{color:var(--gray);font-size:15.5px;max-width:720px;position:relative;z-index:1}
+  .date{color:var(--gray);font-size:13px;margin-top:12px;position:relative;z-index:1}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 28px}
+  .summary-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+  .summary-card strong{display:block;font-size:24px;color:var(--blue);line-height:1}.summary-card span{display:block;color:var(--gray);font-size:13px;margin-top:6px}
+  .section-title{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--gray);font-weight:800;margin:28px 0 12px}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px;margin-bottom:18px}
+  .card h2{font-size:18px;margin-bottom:6px;display:flex;align-items:center;gap:10px;letter-spacing:-.02em}.icon{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:var(--soft-blue);color:var(--blue);flex:0 0 auto}.icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}.icon.green{background:var(--soft-green);color:var(--green)}.icon.gold{background:#FEF6E0;color:#A87B00}.icon.orange{background:#FFF2E5;color:var(--orange)}
+  .badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}.badge-green{background:#E8F8F0;color:var(--green)}.badge-blue{background:#EAF2FB;color:var(--blue)}.badge-gold{background:#FEF6E0;color:#A87B00}.badge-orange{background:#FFF2E5;color:var(--orange)}
+  .card p,.card li{color:#475467;font-size:14.5px}.card ul{margin:10px 0 0 0;padding-left:20px;display:flex;flex-direction:column;gap:7px}.card .desc{margin-top:8px}.muted{color:var(--gray);font-size:13.5px;margin-top:10px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.mini{background:#F9FAFB;border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:12px}.mini strong{font-size:14px}.mini p{font-size:13.5px;margin-top:4px}
+  .footer-cta{text-align:center;margin-top:36px}.footer-cta .btn{padding:14px 28px;font-size:15px}
+  @media(max-width:720px){body{padding:20px 12px 64px}.hero{padding:22px}h1{font-size:27px}.summary{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}.card{padding:19px}.card h2{align-items:flex-start}.badge{margin-left:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand"><b>ibex</b>Go <span class="arrow">›</span></div>
+    <a class="btn btn-primary" href="Abrir Organizador.html">Abrir o Organizador</a>
+  </header>
+
+  <section class="hero">
+    <h1>Novidades do ibexGo</h1>
+    <p class="subtitle">Confira as melhorias mais recentes do Organizador de Excursões. Esta página resume as atualizações aplicadas na versão atual para facilitar o uso, a importação de dados, a auditoria e a gestão de clientes.</p>
+    <p class="date">Atualizado em 23/06/2026</p>
+  </section>
+
+  <div class="summary">
+    <div class="summary-card"><strong>7</strong><span>áreas melhoradas</span></div>
+    <div class="summary-card"><strong>Excel</strong><span>importação e exportação</span></div>
+    <div class="summary-card"><strong>Clientes</strong><span>busca e reutilização</span></div>
+    <div class="summary-card"><strong>Auditoria</strong><span>abas e duplicados</span></div>
+  </div>
+
+  <div class="section-title">Principais atualizações</div>
+
+  <div class="card">
+    <h2><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg></span>Indicador de carregamento <span class="badge badge-blue">Novo</span></h2>
+    <p class="desc">Agora o sistema mostra uma tela de carregamento durante operações importantes, evitando que o usuário ache que o Organizador travou.</p>
+    <ul>
+      <li>Exibe <strong>“Gerando backup...”</strong> ao exportar backup manual ou automático.</li>
+      <li>Exibe <strong>“Gerando backup da excursão...”</strong> ao exportar somente uma excursão.</li>
+      <li>Exibe <strong>“Importando backup...”</strong> durante importação de arquivo.</li>
+      <li>Exibe <strong>“Restaurando backup...”</strong> ao restaurar um backup do histórico.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon green"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Clientes mais inteligentes <span class="badge badge-green">Novo</span></h2>
+    <p class="desc">A área de Clientes ficou mais útil para quem vende para pessoas recorrentes. A agência não precisa redigitar todos os dados quando o mesmo cliente entra em outra excursão.</p>
+    <ul>
+      <li>Novo botão <strong>“+ Novo Cliente”</strong> na tela de Clientes.</li>
+      <li>É possível cadastrar cliente sem vincular imediatamente a uma excursão.</li>
+      <li>É possível salvar um cliente e já adicionar a uma excursão em seguida.</li>
+      <li>No modal de cliente, foi incluído o botão <strong>“+ Adicionar a Excursão”</strong>.</li>
+      <li>Ao adicionar passageiro em uma excursão, existe uma busca por cliente já cadastrado.</li>
+      <li>A busca encontra clientes por <strong>nome, telefone ou CPF/documento</strong> e preenche os campos automaticamente.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon gold"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>Formulários com UX melhorada <span class="badge badge-gold">Melhoria</span></h2>
+    <p class="desc">Os modais de passageiro e cliente foram reorganizados para ficarem mais claros e fáceis de preencher.</p>
+    <ul>
+      <li>Modal de passageiro dividido em seções visuais: dados pessoais, reserva/embarque, valores, parcelamento e status/observações.</li>
+      <li>Campos financeiros mais destacados para reduzir erro de preenchimento.</li>
+      <li>Modal de cliente com histórico mais limpo e informações melhor distribuídas.</li>
+      <li>Ícones SVG substituíram emojis para melhorar contraste e aparência profissional.</li>
+      <li>Correção do clique na busca de cliente existente, que agora seleciona corretamente o passageiro.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon orange"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>Auditoria com abas <span class="badge badge-orange">Melhoria</span></h2>
+    <p class="desc">A Auditoria foi segmentada por abas para facilitar a localização dos problemas, sem precisar rolar a página inteira.</p>
+    <ul>
+      <li><strong>Todas:</strong> exibe todos os achados juntos.</li>
+      <li><strong>Financeiro:</strong> saldo negativo, pagamentos duplicados, valor zerado e parcelamento desencontrado.</li>
+      <li><strong>Inadimplência:</strong> parcelas vencidas e passageiros confirmados sem pagamento próximo da viagem.</li>
+      <li><strong>Custos:</strong> contas vencidas de fornecedores.</li>
+      <li><strong>Clientes duplicados:</strong> possíveis cadastros repetidos por CPF ou telefone.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon green"><svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/><path d="M8 3H3v5"/><path d="M16 21h5v-5"/></svg></span>Unificação de clientes duplicados <span class="badge badge-green">Novo</span></h2>
+    <p class="desc">A Auditoria agora identifica possíveis clientes duplicados e permite resolver sem perder pagamentos, excursões ou histórico.</p>
+    <div class="grid-2">
+      <div class="mini"><strong>Unificar cadastros</strong><p>Sincroniza os dados pessoais dos registros duplicados. As excursões e pagamentos independentes continuam preservados.</p></div>
+      <div class="mini"><strong>Manter ambos</strong><p>Remove o alerta quando os registros parecem duplicados, mas na prática representam pessoas diferentes.</p></div>
+    </div>
+    <p class="muted">Importante: a unificação não apaga viagens nem pagamentos. Ela apenas faz os cadastros representarem a mesma pessoa.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h1"/></svg></span>Importação e exportação por Excel <span class="badge badge-blue">Novo</span></h2>
+    <p class="desc">Foi criado um módulo específico para importar e exportar planilhas, pensado para clientes que já trabalham no Excel.</p>
+    <ul>
+      <li>Botão <strong>“Importar Excel”</strong> dentro da aba de passageiros da excursão.</li>
+      <li>Botão <strong>“Exportar Excel”</strong> dentro da excursão para baixar passageiros no modelo do ibexGo.</li>
+      <li>Botão para <strong>exportar todos os clientes</strong> na tela de Clientes.</li>
+      <li>Reconhecimento automático de colunas com nomes diferentes, como <strong>Fone → Telefone</strong>, <strong>CPF → Documento</strong> e <strong>Municipio → Cidade</strong>.</li>
+      <li>Antes de confirmar a importação, o sistema mostra um preview com os dados reconhecidos.</li>
+      <li>Campos não reconhecidos são ignorados, e campos ausentes ficam em branco.</li>
+      <li>Suporte ao arquivo local <strong>xlsx.full.min.js</strong>, evitando problemas com CDN em uso por arquivo local.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon green"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg></span>Botão do WhatsApp na tela de Clientes <span class="badge badge-green">Melhoria</span></h2>
+    <p class="desc">O botão de WhatsApp na listagem de clientes foi trocado por ícone SVG, seguindo o mesmo padrão visual usado na tela de Cobranças.</p>
+  </div>
+
+  <div class="section-title">Melhorias já existentes mantidas</div>
+
+  <div class="card">
+    <h2><span class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>Pagamentos mais precisos <span class="badge badge-blue">Melhoria</span></h2>
+    <p class="desc">A tela de registro de pagamentos reconhece e atualiza a parcela correta ao quitar um pagamento, mantendo o saldo do passageiro mais confiável.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon gold"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16l4-4 3 3 5-7"/></svg></span>Planejador com cenário real <span class="badge badge-gold">Melhoria</span></h2>
+    <p class="desc">O Planejador calcula cenários pelo número real de passageiros simulado, e não apenas pela capacidade máxima do veículo.</p>
+    <ul>
+      <li>Novo campo de mínimo de passageiros.</li>
+      <li>Cenários com receita, custos, lucro/prejuízo, margem e valor mínimo para não ter prejuízo.</li>
+      <li>Simulador manual ampliado para testar combinações de quantidade e preço.</li>
+    </ul>
+  </div>
+
+  <div class="footer-cta">
+    <a class="btn btn-primary" href="Abrir Organizador.html">Abrir o Organizador agora</a>
+  </div>
+
+</div>
+</body>
+</html>

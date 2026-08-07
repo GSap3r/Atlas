@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ibexGo — Guia de Uso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { font-family: 'DM Sans', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 24px; color: #172033; background: #F6F8FB; }
+  h1 { font-size: 28px; font-weight: 700; }
+  h2 { font-size: 18px; font-weight: 700; margin: 28px 0 8px; color: #14539B; }
+  p { color: #667085; line-height: 1.7; margin-bottom: 12px; }
+  .brand { font-size: 22px; font-weight: 700; }
+  .arrow { color: #F2B807; font-weight: 800; }
+  .card { background: #fff; border-radius: 12px; padding: 20px 24px; border: 1px solid #E4E7EC; margin-bottom: 16px; }
+  code { background: #F6F8FB; border: 1px solid #E4E7EC; border-radius: 6px; padding: 2px 8px; font-size: 14px; }
+  ul { color: #667085; line-height: 2; padding-left: 20px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #14539B; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; }
+  .warn { background: #FFEDD5; border-left: 4px solid #F79009; border-radius: 8px; padding: 14px 18px; color: #C2410C; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand"><b>ibex</b>Go <span class="arrow">›</span></div>
+  <h1>Organizador de Excursões</h1>
+  <p>Sistema local para organizar excursões, controlar passageiros, assentos, pagamentos e finanças.</p>
+  <a class="btn" href="Abrir Organizador.html">Abrir o Sistema →</a>
+</div>
+
+<div class="warn">⚠️ Os dados ficam salvos no <b>navegador do seu computador</b>. Exporte backup regularmente via menu Backup.</div>
+
+<h2>Como usar</h2>
+<div class="card">
+  <ul>
+    <li>Abra o arquivo <code>Abrir Organizador.html</code> no navegador</li>
+    <li>Um exemplo de excursão (Gramado Julho) é carregado automaticamente</li>
+    <li>Use o menu lateral para navegar</li>
+    <li>Clique em uma excursão para gerenciá-la</li>
+    <li>Use as abas dentro de cada excursão para gerenciar passageiros, assentos, pagamentos e contas</li>
+  </ul>
+</div>
+
+<h2>Estrutura de arquivos</h2>
+<div class="card">
+  <ul>
+    <li><code>Abrir Organizador.html</code> — Arquivo principal (abrir este)</li>
+    <li><code>assets/css/style.css</code> — Estilos visuais</li>
+    <li><code>assets/js/app.js</code> — Lógica principal</li>
+    <li><code>assets/js/db.js</code> — Banco de dados local (IndexedDB)</li>
+    <li><code>assets/js/backup.js</code> — Exportar/importar backup</li>
+    <li><code>assets/js/pdf.js</code> — Geração de relatórios/PDF</li>
+    <li><code>assets/js/utils.js</code> — Funções auxiliares</li>
+    <li><code>exemplos/excursao-exemplo.json</code> — Exemplo de backup</li>
+  </ul>
+</div>
+
+<h2>Funcionalidades</h2>
+<div class="card">
+  <ul>
+    <li>Dashboard com resumo financeiro geral</li>
+    <li>Múltiplas excursões com cores personalizadas</li>
+    <li>Cadastro completo de passageiros</li>
+    <li>Mapa visual de assentos do ônibus</li>
+    <li>Histórico de pagamentos por passageiro</li>
+    <li>Contas a pagar por excursão</li>
+    <li>Resumo financeiro com ponto de equilíbrio</li>
+    <li>Lista de embarque para imprimir</li>
+    <li>Relatórios em PDF e CSV</li>
+    <li>Backup completo em JSON</li>
+  </ul>
+</div>
+
+<h2>Backup</h2>
+<div class="card">
+  <p>Vá em <b>Backup</b> no menu lateral e clique em <b>Baixar Backup Agora</b>. Guarde o arquivo <code>.json</code> em local seguro (nuvem, pendrive, etc).</p>
+  <p>Para restaurar, use o botão <b>Importar Backup</b> e selecione o arquivo <code>.json</code>.</p>
+</div>
+
+<p style="text-align:center;margin-top:40px;font-size:13px;color:#9CA3AF"><b>ibex</b>Go <span style="color:#F2B807;font-weight:800">›</span> v1.0</p>
+</body>
+</html>

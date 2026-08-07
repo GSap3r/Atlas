@@ -1,0 +1,23 @@
+{
+  "_info": "Exemplo de arquivo de backup ibexGo",
+  "_exportedAt": "2025-06-01T10:00:00.000Z",
+  "excursoes": [
+    {
+      "id": "exc-gramado-exemplo",
+      "nome": "Gramado Julho",
+      "destino": "Gramado – RS",
+      "dataSaida": "2025-07-12",
+      "dataRetorno": "2025-07-16",
+      "horario": "06:00",
+      "localEmbarque": "Praça Central",
+      "vagas": 40,
+      "valorPassageiro": 890,
+      "observacoes": "Excursão de exemplo ibexGo — 5 dias em Gramado",
+      "cor": "#14539B"
+    }
+  ],
+  "passageiros": [],
+  "pagamentos": [],
+  "contas": [],
+  "meta": []
+}
