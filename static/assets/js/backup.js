@@ -1,6 +1,6 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/backup.js
-// Sistema completo de backup ibexGo
+// ARQUIVO: atlas/assets/js/backup.js
+// Sistema completo de backup Atlas
 // ==============================================
 const Backup = (() => {
 
@@ -27,7 +27,7 @@ const Backup = (() => {
       'Antes de restaurar':      'antes-restaurar',
       'Backup por excursão':     'excursao-' + (extra||'').replace(/[^a-zA-Z0-9]/g,'-').slice(0,20),
     }[tipo] || 'backup';
-    return `ibexgo-${slug}-${_ts()}.json`;
+    return `atlas-${slug}-${_ts()}.json`;
   }
 
   function _tamanhoStr(json) {
@@ -196,7 +196,7 @@ const Backup = (() => {
       const tiposUs = tipos.filter(t => tipoIds.has(t.id));
 
       const payload = {
-        app: 'ibexGo Organizador de Excursões',
+        app: 'Atlas Organizador de Excursões',
         version: 3,
         exportedAt: new Date().toISOString(),
         tipo: 'Backup por excursão',
@@ -271,7 +271,7 @@ const Backup = (() => {
     if (!raw || typeof raw !== 'object') return 'Arquivo inválido ou corrompido.';
     const data = raw.data || raw;
     const temAlgo = ['excursoes','passageiros','meta'].some(k => Array.isArray(data[k]));
-    if (!temAlgo) return 'Esse arquivo não parece ser um backup válido do ibexGo.';
+    if (!temAlgo) return 'Esse arquivo não parece ser um backup válido do Atlas.';
     return null; // OK
   }
 

@@ -1,5 +1,5 @@
 # ==============================================
-# ARQUIVO: ibexgo_python/app.py
+# ARQUIVO: atlas_python/app.py
 # ==============================================
 import os
 

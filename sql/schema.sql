@@ -1,5 +1,5 @@
 -- ==============================================
--- ibexGo - Schema PostgreSQL
+-- Atlas - Schema PostgreSQL
 -- Substitui o IndexedDB do navegador por um banco
 -- relacional. Usamos uma tabela genérica (store_items)
 -- porque o app original guarda "stores" (coleções)

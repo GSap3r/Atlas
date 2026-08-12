@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<!-- ARQUIVO: ibexgo/atualizacoes.html -->
+<!-- ARQUIVO: atlas/atualizacoes.html -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ibexGo — Novidades</title>
+<title>Atlas — Novidades</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="assets/img/logo.png"/>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
-    --blue:#14539B; --blue-2:#056CF2; --gold:#F2B807; --white:#FFFFFF; --bg:#F6F8FB;
+    --blue:#2E93B0; --blue-2:#056CF2; --gold:#F2B807; --white:#FFFFFF; --bg:#F6F8FB;
     --dark:#172033; --gray:#667085; --green:#12B76A; --red:#F04438;
     --orange:#F79009; --border:#E4E7EC; --soft-blue:#EAF2FB; --soft-green:#E8F8F0;
     --shadow:0 1px 4px rgba(20,40,80,.07),0 4px 16px rgba(20,40,80,.06);
@@ -19,7 +20,7 @@
   body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--dark);line-height:1.55;padding:32px 16px 80px}
   .wrap{max-width:860px;margin:0 auto}
   header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px}
-  .brand{font-size:22px;font-weight:800;letter-spacing:-.02em}.brand b{color:var(--blue)}.brand .arrow{color:var(--gold)}
+  .brand{font-size:22px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}.brand img{width:32px;height:32px;border-radius:8px}.brand b{color:var(--blue)}.brand .arrow{color:var(--gold)}
   .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--radius-sm);font-weight:700;font-size:14px;text-decoration:none;border:1.5px solid var(--border);background:var(--white);color:var(--dark);transition:opacity .15s, transform .15s}.btn:hover{opacity:.9;transform:translateY(-1px)}
   .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
   .hero{background:linear-gradient(135deg,#fff 0%,#EEF5FF 100%);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
@@ -43,12 +44,12 @@
 <div class="wrap">
 
   <header>
-    <div class="brand"><b>ibex</b>Go <span class="arrow">›</span></div>
+    <div class="brand"><img src="assets/img/logo.png" alt="Atlas"/><b>Atlas</b> <span class="arrow">›</span></div>
     <a class="btn btn-primary" href="Abrir Organizador.html">Abrir o Organizador</a>
   </header>
 
   <section class="hero">
-    <h1>Novidades do ibexGo</h1>
+    <h1>Novidades do Atlas</h1>
     <p class="subtitle">Confira as melhorias mais recentes do Organizador de Excursões. Esta página resume as atualizações aplicadas na versão atual para facilitar o uso, a importação de dados, a auditoria e a gestão de clientes.</p>
     <p class="date">Atualizado em 23/06/2026</p>
   </section>
@@ -125,7 +126,7 @@
     <p class="desc">Foi criado um módulo específico para importar e exportar planilhas, pensado para clientes que já trabalham no Excel.</p>
     <ul>
       <li>Botão <strong>“Importar Excel”</strong> dentro da aba de passageiros da excursão.</li>
-      <li>Botão <strong>“Exportar Excel”</strong> dentro da excursão para baixar passageiros no modelo do ibexGo.</li>
+      <li>Botão <strong>“Exportar Excel”</strong> dentro da excursão para baixar passageiros no modelo do Atlas.</li>
       <li>Botão para <strong>exportar todos os clientes</strong> na tela de Clientes.</li>
       <li>Reconhecimento automático de colunas com nomes diferentes, como <strong>Fone → Telefone</strong>, <strong>CPF → Documento</strong> e <strong>Municipio → Cidade</strong>.</li>
       <li>Antes de confirmar a importação, o sistema mostra um preview com os dados reconhecidos.</li>

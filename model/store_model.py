@@ -1,5 +1,5 @@
 # ==============================================
-# ARQUIVO: ibexgo_python/model/store_model.py
+# ARQUIVO: atlas_python/model/store_model.py
 # Camada de acesso a dados (equivalente ao antigo
 # assets/js/db.js, porém falando com PostgreSQL)
 # ==============================================
@@ -135,7 +135,7 @@ class StoreModel:
             ]
 
         return {
-            "app": "ibexGo Organizador de Excursões",
+            "app": "Atlas Organizador de Excursões",
             "version": 3,
             "exportedAt": cls._now_iso(),
             "data": data,

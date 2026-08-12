@@ -1,5 +1,5 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/app-utils.js
+// ARQUIVO: atlas/assets/js/app-utils.js
 // Imprimir, CSV, motor de modal, gráficos
 // ==============================================
 async function _loadExcursaoData() {
@@ -123,8 +123,8 @@ function drawDashboardCharts(ED, SC, PCT) {
   setTimeout(drawAll, 400);
 
   window.addEventListener('resize', function() {
-    clearTimeout(window._ibexResizeTimer);
-    window._ibexResizeTimer = setTimeout(drawAll, 200);
+    clearTimeout(window._atlasResizeTimer);
+    window._atlasResizeTimer = setTimeout(drawAll, 200);
   });
 
   function _roundRect(ctx, x, y, w, h, r) {

@@ -1,5 +1,5 @@
 # ==============================================
-# ARQUIVO: ibexgo_python/routes/store_routes.py
+# ARQUIVO: atlas_python/routes/store_routes.py
 # ==============================================
 from flask import Blueprint, request
 

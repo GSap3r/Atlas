@@ -1,5 +1,5 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/utils.js
+// ARQUIVO: atlas/assets/js/utils.js
 // ==============================================
 const Utils = (() => {
 

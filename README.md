@@ -1,6 +1,6 @@
-# ibexGo — versão Python + PostgreSQL
+# Atlas — versão Python + PostgreSQL
 
-Este projeto é uma adaptação do **ibexGo** (que originalmente rodava 100% no
+Este projeto é uma adaptação do **Atlas** (que originalmente rodava 100% no
 navegador, salvando tudo no **IndexedDB**) para uma arquitetura
 **cliente/servidor**:
 
@@ -20,7 +20,7 @@ navegador, salvando tudo no **IndexedDB**) para uma arquitetura
 ## Estrutura
 
 ```
-ibexgo_python/
+atlas_python/
 ├── app.py                     # cria as tabelas e sobe o servidor Flask
 ├── requirements.txt
 ├── .env.example
@@ -77,7 +77,7 @@ dentro do JSON se precisar no futuro.
 
 ## Importar um backup existente (dados reais)
 
-Se você já tem um arquivo de backup exportado pelo ibexGo (menu **Backup → Exportar**,
+Se você já tem um arquivo de backup exportado pelo Atlas (menu **Backup → Exportar**,
 ou o `.json` que a IndexedDB antiga já continha), pode carregá-lo direto no
 PostgreSQL sem precisar recriar nada manualmente:
 
@@ -99,7 +99,7 @@ seus dados normalmente, agora vindos do PostgreSQL.
 
 1. Tenha um PostgreSQL rodando e crie o banco:
    ```sql
-   CREATE DATABASE ibexgo;
+   CREATE DATABASE atlas;
    ```
 2. Copie `.env.example` para `.env` e ajuste usuário/senha/host.
 3. Instale as dependências:

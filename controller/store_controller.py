@@ -1,5 +1,5 @@
 # ==============================================
-# ARQUIVO: ibexgo_python/controller/store_controller.py
+# ARQUIVO: atlas_python/controller/store_controller.py
 # ==============================================
 from flask import jsonify
 

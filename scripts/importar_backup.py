@@ -1,6 +1,6 @@
 # ==============================================
-# ARQUIVO: ibexgo_python/scripts/importar_backup.py
-# Importa um backup JSON exportado pelo ibexGo
+# ARQUIVO: atlas_python/scripts/importar_backup.py
+# Importa um backup JSON exportado pelo Atlas
 # (o mesmo formato do botão "Exportar" do app, ou
 # do arquivo colado pelo usuário) diretamente para
 # o PostgreSQL.

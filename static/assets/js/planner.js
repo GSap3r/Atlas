@@ -1,6 +1,6 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/planner.js
-// Planejador de Excursões Lucrativas — ibexGo
+// ARQUIVO: atlas/assets/js/planner.js
+// Planejador de Excursões Lucrativas — Atlas
 // ==============================================
 
 // ── ESTADO DO PLANEJADOR ─────────────────────────────────────────────
@@ -77,7 +77,7 @@ function renderSimCard(s, fin) {
   return `
   <div class="sim-card">
     <div class="sim-card-header">
-      <div class="sim-card-color" style="background:${s.cor||'#14539B'}"></div>
+      <div class="sim-card-color" style="background:${s.cor||'#2E93B0'}"></div>
       <div class="sim-card-info">
         <div class="sim-card-nome">${Utils.escHtml(s.nome)}</div>
         <div class="sim-card-dest text-gray" style="font-size:13px">${Utils.escHtml(s.destino||'')} ${s.dataSaida ? '· '+Utils.formatDate(s.dataSaida) : ''}</div>
@@ -143,8 +143,8 @@ function backToList() {
 // ── STEP 1: DADOS DA SIMULAÇÃO ────────────────────────────────────────
 function renderStep1(sim) {
   const v = sim || {};
-  const corSels = ['#14539B','#F2B807','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4']
-    .map(c => `<div class="color-opt ${(v.cor||'#14539B')===c?'selected':''}" style="background:${c}" data-cor="${c}" onclick="selecionarCorSim('${c}')"></div>`).join('');
+  const corSels = ['#2E93B0','#F2B807','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4']
+    .map(c => `<div class="color-opt ${(v.cor||'#2E93B0')===c?'selected':''}" style="background:${c}" data-cor="${c}" onclick="selecionarCorSim('${c}')"></div>`).join('');
 
   return `
   ${backToList()}
@@ -199,7 +199,7 @@ function renderStep1(sim) {
       <div class="form-group">
         <label class="form-label">Cor da simulação</label>
         <div class="color-picker-row" id="colorPickerSim">${corSels}</div>
-        <input type="hidden" name="cor" id="corSimSelecionada" value="${v.cor||'#14539B'}"/>
+        <input type="hidden" name="cor" id="corSimSelecionada" value="${v.cor||'#2E93B0'}"/>
       </div>
       <div class="form-group">
         <label class="form-label">Observações gerais</label>
@@ -702,7 +702,7 @@ function renderPlanoFinal(sim, custos) {
 
   <div class="plano-final-wrap">
     <div class="plano-header">
-      <div><b>ibex</b>Go <span style="color:#F2B807;font-weight:700">›</span> Plano de Excursão</div>
+      <div><b>Atlas</b> <span style="color:#F2B807;font-weight:700">›</span> Plano de Excursão</div>
       <span class="badge ${st.cls}">${st.label}</span>
     </div>
 
@@ -759,8 +759,8 @@ async function criarExcursaoDoPlano(simId) {
     vagas:          sim.vagas || 40,
     valorPassageiro: fin.valorSugerido || sim.valorPax || 0,
     localEmbarque:  '',
-    observacoes:    `[ibexGo Planejador] ${sim.obs||''}\nMeta: ${fin.pontoEquilibrio} pax · Lucro prev.: ${Utils.formatCurrency(fin.lucroPrevisto)}`,
-    cor:            sim.cor || '#14539B',
+    observacoes:    `[Atlas Planejador] ${sim.obs||''}\nMeta: ${fin.pontoEquilibrio} pax · Lucro prev.: ${Utils.formatCurrency(fin.lucroPrevisto)}`,
+    cor:            sim.cor || '#2E93B0',
   };
   const excSalva = await DB.save('excursoes', excursao);
 

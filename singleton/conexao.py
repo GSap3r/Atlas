@@ -1,5 +1,5 @@
 # ==============================================
-# ARQUIVO: ibexgo_python/singleton/conexao.py
+# ARQUIVO: atlas_python/singleton/conexao.py
 # Conexão com PostgreSQL (Singleton + pool)
 # ==============================================
 import os
@@ -11,9 +11,9 @@ def _config():
     return {
         "host": os.getenv("DB_HOST", "localhost"),
         "port": int(os.getenv("DB_PORT", "5432")),
-        "dbname": os.getenv("DB_NAME", "ibexgo"),
+        "dbname": os.getenv("DB_NAME", "atlas"),
         "user": os.getenv("DB_USER", "postgres"),
-        "password": os.getenv("DB_PASSWORD", "postgres"),
+        "password": os.getenv("DB_PASSWORD", "guilherme1015"),
     }
 
 

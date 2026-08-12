@@ -1,9 +1,9 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/app-excel.js
+// ARQUIVO: atlas/assets/js/app-excel.js
 // Importação e exportação via Excel (SheetJS)
 // ==============================================
 
-const IBExcel = (() => {
+const AtlasExcel = (() => {
 
   // ── Campos dos passageiros ─────────────────────────────────────────
   // Ordem e labels das colunas no Excel exportado
@@ -127,7 +127,7 @@ const IBExcel = (() => {
 
       // Aba de instruções
       const wsInst = XLSX.utils.aoa_to_sheet([
-        ['ibexGo — Modelo de importação de passageiros'],
+        ['Atlas — Modelo de importação de passageiros'],
         [''],
         ['Para importar: mantenha os cabeçalhos da aba "Passageiros" exatamente como estão.'],
         ['Campos obrigatórios: Nome'],
@@ -138,7 +138,7 @@ const IBExcel = (() => {
       XLSX.utils.book_append_sheet(wb, wsInst, 'Instruções');
 
       const nomeExc = (exc?.nome || 'excursao').replace(/[^a-zA-Z0-9À-ú ]/g, '').trim().slice(0, 30);
-      const nome = `ibexgo-passageiros-${nomeExc}-${new Date().toISOString().slice(0,10)}.xlsx`;
+      const nome = `atlas-passageiros-${nomeExc}-${new Date().toISOString().slice(0,10)}.xlsx`;
       XLSX.writeFile(wb, nome);
       Utils.hideLoading();
       Utils.showToast(`Exportado: ${passageiros.length} passageiro(s)`);
@@ -202,7 +202,7 @@ const IBExcel = (() => {
 
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
-      const nome = `ibexgo-clientes-${new Date().toISOString().slice(0,10)}.xlsx`;
+      const nome = `atlas-clientes-${new Date().toISOString().slice(0,10)}.xlsx`;
       XLSX.writeFile(wb, nome);
       Utils.hideLoading();
       Utils.showToast(`Exportado: ${rows.length} cliente(s)`);
@@ -245,7 +245,7 @@ const IBExcel = (() => {
 
       if (colsRec === 0) {
         Utils.hideLoading();
-        Utils.showToast('Nenhuma coluna reconhecida. Use o modelo exportado pelo ibexGo ou renomeie as colunas.', 'error');
+        Utils.showToast('Nenhuma coluna reconhecida. Use o modelo exportado pelo Atlas ou renomeie as colunas.', 'error');
         return;
       }
 
@@ -316,7 +316,7 @@ const IBExcel = (() => {
         : `<span style="background:#F3F4F6;color:#9CA3AF;padding:2px 8px;border-radius:99px;font-size:11px">${Utils.escHtml(h)} (ignorada)</span>`;
     }).join(' ');
 
-    window._ibexImportData = passageiros.filter(p => p.nome);
+    window._atlasImportData = passageiros.filter(p => p.nome);
     openModal('Confirmar importação', `
       <div class="form-section section-highlight" style="margin-bottom:16px">
         <div class="form-section-header">
@@ -351,14 +351,14 @@ const IBExcel = (() => {
 
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button>
-        <button class="btn btn-primary" style="flex:1" onclick="IBExcel._confirmarImportacao('${excursaoId}')">Importar ${validos} passageiro(s)</button>
+        <button class="btn btn-primary" style="flex:1" onclick="AtlasExcel._confirmarImportacao('${excursaoId}')">Importar ${validos} passageiro(s)</button>
       </div>
     `, 'modal-xl');
   }
 
   // ── Salva os passageiros no banco ──────────────────────────────────
   async function _confirmarImportacao(excursaoId) {
-    const passageiros = window._ibexImportData || [];
+    const passageiros = window._atlasImportData || [];
     if (!passageiros.length) {
       Utils.showToast('Nenhum dado para importar.', 'warn'); return;
     }
@@ -462,6 +462,6 @@ const IBExcel = (() => {
   };
 })();
 
-window.IBExcel = IBExcel;
+window.AtlasExcel = AtlasExcel;
 // Alias para compatibilidade
-if (typeof Excel === "undefined") { window.Excel = IBExcel; }
+if (typeof Excel === "undefined") { window.Excel = AtlasExcel; }

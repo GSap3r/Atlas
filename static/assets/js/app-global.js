@@ -1,5 +1,5 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/app-global.js
+// ARQUIVO: atlas/assets/js/app-global.js
 // Excursão CRUD, tipos de passageiro,
 // fornecedores, cobranças, configurações, backup
 // ==============================================
@@ -408,7 +408,7 @@ async function renderClientes() {
   <div class="page-header">
     <div><h1>Clientes</h1><div class="page-header-sub">Busque por nome, telefone, documento, reserva, cidade ou excursão.</div></div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-outline btn-sm" onclick="IBExcel.exportarClientes()" title="Exportar todos os clientes para Excel">
+      <button class="btn btn-outline btn-sm" onclick="AtlasExcel.exportarClientes()" title="Exportar todos os clientes para Excel">
         <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
         Exportar Excel
       </button>
@@ -689,7 +689,7 @@ async function renderConfiguracoes() {
   const cfgMsg   = await DB.getById('meta','msgCobranca');
   const msgAtual = cfgMsg?.value || 'Olá {nome}! Você tem um saldo em aberto de {valor} referente à excursão "{excursao}". Por favor, entre em contato para regularizar. Obrigado!';
 
-  const sAtivo  = 'padding:10px 20px;border:none;background:none;font-size:14px;cursor:pointer;border-bottom:3px solid #14539B;font-weight:600;color:#14539B;';
+  const sAtivo  = 'padding:10px 20px;border:none;background:none;font-size:14px;cursor:pointer;border-bottom:3px solid #2E93B0;font-weight:600;color:#2E93B0;';
   const sInativo = 'padding:10px 20px;border:none;background:none;font-size:14px;cursor:pointer;border-bottom:3px solid transparent;font-weight:500;color:#666;';
 
   const tabBar =

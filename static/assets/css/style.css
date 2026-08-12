@@ -1,11 +1,11 @@
 /* ==============================================
-   ARQUIVO: ibexgo/assets/css/style.css
+   ARQUIVO: atlas/assets/css/style.css
    ============================================== */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --blue: #14539B;
+  --blue: #2E93B0;
   --gold: #F2B807;
   --white: #FFFFFF;
   --bg: #F6F8FB;
@@ -44,9 +44,16 @@ body {
   z-index: 100;
   transition: transform .25s ease;
 }
-.sidebar-brand { padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sidebar-brand {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-logo { width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
 .brand-text { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -.3px; }
 .brand-arrow { color: var(--gold); font-weight: 800; }
+.footer-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; color: rgba(255,255,255,.5); }
+.footer-logo { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; opacity: .85; }
 .sidebar-nav { flex: 1; padding: 12px 0; }
 .nav-item {
   display: flex; align-items: center; gap: 10px;
@@ -157,7 +164,7 @@ td.sv-currency { font-size: 14px !important; }
 .btn:hover { opacity: .88; }
 .btn:active { transform: scale(.98); }
 .btn-primary { background: var(--blue); color: #fff; }
-.btn-primary:hover { opacity: 1; background: #1161b3; }
+.btn-primary:hover { opacity: 1; background: #1F6E85; }
 .btn-gold { background: var(--gold); color: var(--dark); }
 .btn-gold:hover { opacity: 1; background: #e0aa00; }
 .btn-outline { background: transparent; color: var(--dark); border: 1.5px solid var(--border); }

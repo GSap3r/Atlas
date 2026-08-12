@@ -1,5 +1,5 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/db.js
+// ARQUIVO: atlas/assets/js/db.js
 // Versão 4 — antes falava com IndexedDB (navegador),
 // agora fala com a API Python (Flask + PostgreSQL).
 // Mantém exatamente a mesma interface pública usada

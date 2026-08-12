@@ -1,15 +1,15 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/pdf.js
+// ARQUIVO: atlas/assets/js/pdf.js
 // ==============================================
 const PDF = (() => {
 
   const CSS_BASE = `
     body { font-family: Arial, sans-serif; font-size: 13px; color: #111; margin: 30px; }
-    h1   { font-size: 20px; margin-bottom: 4px; color: #14539B; }
+    h1   { font-size: 20px; margin-bottom: 4px; color: #2E93B0; }
     h2   { font-size: 15px; margin: 20px 0 8px; color: #172033; border-bottom: 1px solid #E4E7EC; padding-bottom: 4px; }
     .meta { font-size: 13px; color: #555; margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-    th    { background: #14539B; color: #fff; padding: 8px 10px; text-align: left; font-size: 12px; }
+    th    { background: #2E93B0; color: #fff; padding: 8px 10px; text-align: left; font-size: 12px; }
     td    { padding: 8px 10px; border-bottom: 1px solid #e5e5e5; }
     tr:nth-child(even) td { background: #f9f9f9; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
@@ -36,7 +36,7 @@ const PDF = (() => {
           font-size:11px; color:#888; text-align:center; font-style:italic; }
       </style>
     </head><body>${corpo}
-      <div class="footer">ibexGo › — Gerado em ${Utils.formatDatetime(new Date().toISOString())}</div>
+      <div class="footer">Atlas › — Gerado em ${Utils.formatDatetime(new Date().toISOString())}</div>
       ${licFooter}
       <script>window.onload = () => window.print();<\/script>
     </body></html>`);

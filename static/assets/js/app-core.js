@@ -1,9 +1,9 @@
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/app-core.js
+// ARQUIVO: atlas/assets/js/app-core.js
 // Init, navegação, dashboard, lista de excursões
 // ==============================================
 // ==============================================
-// ARQUIVO: ibexgo/assets/js/app.js
+// ARQUIVO: atlas/assets/js/app.js
 // ==============================================
 
 // ── ESTADO ──────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ const TIPOS_CUSTO      = [
   { value: 'por_tipo',    label: 'Por tipo específico de passageiro' },
   { value: 'por_pacote',  label: 'Por pacote específico' },
 ];
-const CORES = ['#14539B','#F2B807','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4','#64748B','#10B981'];
+const CORES = ['#2E93B0','#F2B807','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4','#64748B','#10B981'];
 
 // ── INIT ─────────────────────────────────────────────────────────────
 async function init() {
@@ -48,12 +48,12 @@ async function init() {
 }
 
 function _injectLicenseFooter() {
-  const existing = document.getElementById('ibex-license-footer');
+  const existing = document.getElementById('atlas-license-footer');
   if (existing) existing.remove();
   const txt = License.getLicenseFooterText();
   if (!txt) return;
   const bar = document.createElement('div');
-  bar.id = 'ibex-license-footer';
+  bar.id = 'atlas-license-footer';
   bar.className = 'license-footer-bar';
   bar.textContent = txt;
   document.body.appendChild(bar);
