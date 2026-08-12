@@ -42,9 +42,6 @@ async function init() {
   Backup.iniciarAgendadorBackup();
   navigate('dashboard');
 
-  // Inicializa sistema de licença (verificação 48h + rodapé)
-  await License.init();
-  _injectLicenseFooter();
 }
 
 function _injectLicenseFooter() {
