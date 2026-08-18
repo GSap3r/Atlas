@@ -655,12 +655,13 @@ async function atualizarStatusPassageiro(passId, excId, selectEl) {
 
 // ── MODAL: PASSAGEIRO (4 blocos) ──────────────────────────────────────
 async function openModalPassageiro(excId, id=null, dadosIniciais={}) {
-  const [p, exc, tipos, pacotes, todasReservas] = await Promise.all([
+  const [p, exc, tipos, pacotes, todasReservas, vendedores] = await Promise.all([
     id?DB.getById('passageiros',id):null,
     DB.getById('excursoes', excId),
     DB.getAll('tiposPassageiro'),
     DB.getAll('pacotes'),
-    DB.getAll('reservas')
+    DB.getAll('reservas'),
+    DB.getAll('vendedores')
   ]);
   const excReservas = todasReservas.filter(r => r.excursaoId === excId);
   const v = p ? { ...p } : { ...dadosIniciais };
@@ -692,6 +693,12 @@ async function openModalPassageiro(excId, id=null, dadosIniciais={}) {
   ].join('');
 
   const tipoOpts = tiposAti.map(t=>`<option value="${t.id}" ${v.tipoPassageiroId===t.id?'selected':''}>${Utils.escHtml(t.nome)} ${!t.pagante?'(não pagante)':''}</option>`).join('');
+
+  const vendedoresAti = vendedores.filter(vd => vd.ativo!==false);
+  const vendedorOpts = [
+    `<option value="">— Sem vendedor —</option>`,
+    ...vendedoresAti.map(vd=>`<option value="${vd.id}" ${v.vendedorId===vd.id?'selected':''}>${Utils.escHtml(vd.nome)}</option>`)
+  ].join('');
 
   openModal(id?'Editar Passageiro':'Novo Passageiro', `
   <form id="formPass" onsubmit="salvarPassageiro(event,'${excId}','${id||''}')">
@@ -778,6 +785,10 @@ async function openModalPassageiro(excId, id=null, dadosIniciais={}) {
       <div class="form-group"><label class="form-label">Titular da reserva</label>
         <input class="form-control" name="titularReserva" id="inputTitularReserva"
           value="${Utils.escHtml(v.titularReserva||v.nome||'')}" placeholder="Nome do titular"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Vendedor</label>
+        <select class="form-control" name="vendedorId">${vendedorOpts}</select></div>
     </div>
   </div>
 

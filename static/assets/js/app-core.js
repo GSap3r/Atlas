@@ -179,6 +179,7 @@ async function render() {
     clientes:        ['Clientes',           renderClientes],
     tiposPassageiro: ['Tipos de Passageiro',renderTiposPassageiro],
     fornecedores:    ['Fornecedores',       renderFornecedores],
+    vendedores:      ['Vendedores',         renderVendedores],
     configuracoes:   ['Configurações',      renderConfiguracoes],
     backup:          ['Backup',             renderBackup],
   };
