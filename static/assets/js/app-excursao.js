@@ -79,7 +79,8 @@ async function renderDashboard() {
   window._dashED  = excDados;
   window._dashSC  = statusCount;
   window._dashPCT = pctRecebido;
-
+    
+// A partir daqui é a declaração dos dashs no cod, já fica na aba de dashboards
   return `
   <div class="dash-header">
     <div>
@@ -286,7 +287,7 @@ function renderExcCard(exc, passageiros, pagamentos, contas, tipos) {
   </div>`;
 }
 
-// ── LISTA DE EXCURSÕES ────────────────────────────────────────────────
+// ── LISTA DE EXCURSÕES ──────────────────────────────────────────────── aqui já é a aba de excursões. Objetivo dessa aba é apenas para visualização, então as excursões não serão criadas aqui (comentar com o sales para rancar grande parte do cod)
 async function renderExcursoes() {
   const [excursoes, passageiros, pagamentos, contas, tipos] = await Promise.all([
     DB.getAll('excursoes'), DB.getAll('passageiros'),
@@ -295,8 +296,8 @@ async function renderExcursoes() {
   if (!excursoes.length) return `
     <div class="empty-state">
       <svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>
-      <h3>Nenhuma excursão</h3><p>Crie sua primeira excursão.</p>
-      <button class="btn btn-primary mt-16" onclick="openModalExcursao()">+ Nova Excursão</button>
+      <h3>Nenhuma viagem</h3><p>Crie sua primeira viagem.</p>
+      <button class="btn btn-primary mt-16" onclick="openModalExcursao()">+ Nova viagem</button>
     </div>`;
   const today   = Utils.today();
   const sorted  = [...excursoes].sort((a,b)=>(a.dataSaida||'9999').localeCompare(b.dataSaida||'9999'));
@@ -304,11 +305,11 @@ async function renderExcursoes() {
   const passadas= sorted.filter(e => e.dataSaida && e.dataSaida < today);
   const buildGrid = (list) => list.length
     ? `<div class="excursoes-grid">${list.map(e => renderExcCard(e, passageiros, pagamentos, contas, tipos)).join('')}</div>`
-    : `<p class="text-gray" style="font-size:14px;margin-bottom:16px">Nenhuma excursão neste grupo.</p>`;
+    : `<p class="text-gray" style="font-size:14px;margin-bottom:16px">Nenhuma viagem neste grupo.</p>`;
 
   return `
   <div class="filter-bar" style="margin-bottom:20px">
-    <input class="form-control search-input" id="searchExc" placeholder="Buscar excursão..." oninput="filtrarExcursoes()" />
+    <input class="form-control search-input" id="searchExc" placeholder="Buscar viagem..." oninput="filtrarExcursoes()" />
     <select class="form-control" id="filterExcStatus" onchange="filtrarExcursoes()" style="max-width:180px">
       <option value="todas">Todas</option>
       <option value="ativas">Em andamento / futuras</option>
@@ -344,7 +345,7 @@ async function renderExcursao() {
     DB.getAll('passageiros'), DB.getAll('pagamentos'), DB.getAll('contas'),
     DB.getAll('tiposPassageiro'), DB.getAll('pacotes'), DB.getAll('reservas')
   ]);
-  if (!exc) return `<div class="empty-state"><h3>Excursão não encontrada</h3></div>`;
+  if (!exc) return `<div class="empty-state"><h3>Viagem não encontrada</h3></div>`;
 
   const passageiros = todosPass.filter(p => p.excursaoId===exc.id);
   const pagamentos  = todosPags.filter(p => p.excursaoId===exc.id);
@@ -382,7 +383,7 @@ async function renderExcursao() {
   return `
   <button class="back-link" onclick="navigate('excursoes')">
     <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    Voltar para excursões
+    Voltar para Viagens
   </button>
   <div class="exc-detail-hero" style="background:${Utils.escHtml(exc.cor||'#2E93B0')}">
     <div class="flex-between flex-wrap gap-8" style="margin-bottom:16px">
@@ -407,7 +408,7 @@ async function renderExcursao() {
   <div id="tabContent">${tabContent}</div>`;
 }
 
-// ── TAB: PACOTES ──────────────────────────────────────────────────────
+// ── TAB: PACOTES ────────────────────────────────────────────────────── Dentro da aba de excursões, opção de pacotes
 function renderTabPacotes(exc, pacotes, passageiros, tipos) {
   const ativos = pacotes.filter(p => p.ativo !== false);
   const rows   = ativos.map(pac => {
@@ -441,7 +442,7 @@ function renderTabPacotes(exc, pacotes, passageiros, tipos) {
     <div class="stat-card"><div class="stat-label">Sem pacote</div><div class="stat-value ${semPacote>0?'orange':''}">${semPacote}</div></div>
   </div>
   <div class="flex-between mb-16">
-    <span class="section-title">Pacotes da Excursão</span>
+    <span class="section-title">Pacotes da viagem</span>
     <button class="btn btn-primary" onclick="openModalPacote('${exc.id}')">+ Novo Pacote</button>
   </div>
   ${!ativos.length
@@ -453,7 +454,7 @@ function renderTabPacotes(exc, pacotes, passageiros, tipos) {
   }`;
 }
 
-async function openModalPacote(excId, id=null) {
+async function openModalPacote(excId, id=null) { //criação de pacote
   const [tipos, pac] = await Promise.all([DB.getAll('tiposPassageiro'), id?DB.getById('pacotes',id):null]);
   const v   = pac || {};
   const exc = await DB.getById('excursoes', excId);
@@ -501,7 +502,7 @@ async function desativarPacote(id, excId) {
   navigate('excursao', { excursaoId: excId, tab: 'pacotes' });
 }
 
-// ── TAB: PASSAGEIROS ─────────────────────────────────────────────────
+// ── TAB: PASSAGEIROS ───────────────────────────────────────────────── Opção de passageiros dentro da excursão na aba de excursões 
 function renderTabPassageiros(exc, passageiros, pagamentos, tipos, pacotes, reservas) {
   const modoView = state._modoPass || 'lista';
 
@@ -692,11 +693,11 @@ async function openModalPassageiro(excId, id=null, dadosIniciais={}) {
   ].join('');
 
   const tipoOpts = tiposAti.map(t=>`<option value="${t.id}" ${v.tipoPassageiroId===t.id?'selected':''}>${Utils.escHtml(t.nome)} ${!t.pagante?'(não pagante)':''}</option>`).join('');
-
+// até a linha 883 é aonde cria os passageiros dentro da aba de excursões
   openModal(id?'Editar Passageiro':'Novo Passageiro', `
   <form id="formPass" onsubmit="salvarPassageiro(event,'${excId}','${id||''}')">
 
-  ${!id ? `
+  ${!id ? ` 
   <div class="cliente-search-box">
     <label><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> Buscar cliente já cadastrado</label>
     <input class="form-control" id="buscaClienteExistente"
@@ -880,7 +881,7 @@ async function openModalPassageiro(excId, id=null, dadosIniciais={}) {
   </form>`, 'modal-lg');
   setTimeout(recalcParcelas, 0);
 }
-
+    
 function onChangePacote(sel) {
   const opt = sel.options[sel.selectedIndex];
   const val = opt.dataset.valor;
