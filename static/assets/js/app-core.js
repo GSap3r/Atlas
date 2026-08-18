@@ -174,8 +174,8 @@ async function render() {
     dashboard:       ['Dashboard',          renderDashboard],
     excursoes:       ['Excursões',          renderExcursoes],
     excursao:        [null,                 renderExcursao],
-    cobrancas:       ['Cobranças',          renderCobrancas],
-    auditoria:       ['Auditoria Financeira', renderAuditoria],
+    cobrancas:       ['Cobranças',          renderCobrancas], // tirar
+    auditoria:       ['Auditoria Financeira', renderAuditoria], // tirar
     clientes:        ['Clientes',           renderClientes],
     tiposPassageiro: ['Tipos de Passageiro',renderTiposPassageiro],
     fornecedores:    ['Fornecedores',       renderFornecedores],
