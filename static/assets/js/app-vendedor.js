@@ -7,8 +7,8 @@
 // ==============================================
 
 async function renderVendedores() {
-  const [vendedores, passageiros, excursoes] = await Promise.all([
-    DB.getAll('vendedores'), DB.getAll('passageiros'), DB.getAll('excursoes')
+  const [vendedores, passageiros, excursoes, pagamentos] = await Promise.all([
+    DB.getAll('vendedores'), DB.getAll('passageiros'), DB.getAll('excursoes'), DB.getAll('pagamentos')
   ]);
   const ativos   = vendedores.filter(v => v.ativo !== false);
   const inativos = vendedores.filter(v => v.ativo === false);
@@ -18,20 +18,30 @@ async function renderVendedores() {
   const porVendedor = {};
   for (const p of passageiros) {
     if (!p.vendedorId) continue;
+    if (p.status === 'cancelado') continue;
     const exc = excursoes.find(e => e.id === p.excursaoId);
-    if (!porVendedor[p.vendedorId]) porVendedor[p.vendedorId] = { viagens: {}, totalVendas: 0, totalValor: 0 };
+    if (!porVendedor[p.vendedorId]) porVendedor[p.vendedorId] = { viagens: {}, totalVendas: 0, totalValor: 0, totalRecebido: 0 };
     const grp = porVendedor[p.vendedorId];
     const chaveExc = p.excursaoId || '—';
+    const valorVenda = Number(p.valorFinal ?? p.valorCombinado ?? p.valorBase ?? 0) || 0;
+    const recebidoPass = pagamentos
+      .filter(pg => pg.passageiroId === p.id && pg.status === 'pago')
+      .reduce((s, pg) => s + (parseFloat(pg.valor) || 0), 0);
     if (!grp.viagens[chaveExc]) grp.viagens[chaveExc] = { exc, qtd: 0, valor: 0 };
     grp.viagens[chaveExc].qtd += 1;
-    grp.viagens[chaveExc].valor += Number(p.valorFinal ?? p.valorCombinado ?? p.valorBase ?? 0) || 0;
+    grp.viagens[chaveExc].valor += valorVenda;
     grp.totalVendas += 1;
-    grp.totalValor += Number(p.valorFinal ?? p.valorCombinado ?? p.valorBase ?? 0) || 0;
+    grp.totalValor += valorVenda;
+    grp.totalRecebido += recebidoPass;
   }
 
+  const totalComissaoVendido  = ativos.reduce((s, v) => s + (porVendedor[v.id]?.totalValor    || 0) * ((parseFloat(v.comissaoPercentual) || 0) / 100), 0);
+  const totalComissaoRecebido = ativos.reduce((s, v) => s + (porVendedor[v.id]?.totalRecebido || 0) * ((parseFloat(v.comissaoPercentual) || 0) / 100), 0);
+
   const linhas = ativos.map(v => {
-    const stats = porVendedor[v.id] || { viagens: {}, totalVendas: 0, totalValor: 0 };
+    const stats = porVendedor[v.id] || { viagens: {}, totalVendas: 0, totalValor: 0, totalRecebido: 0 };
     const qtdViagens = Object.keys(stats.viagens).length;
+    const comissaoPct = parseFloat(v.comissaoPercentual) || 0;
     const waLink = v.whatsapp ? Utils.waLink(v.whatsapp) : null;
     return `<tr>
       <td><b>${Utils.escHtml(v.nome || '')}</b></td>
@@ -45,6 +55,7 @@ async function renderVendedores() {
       <td><span class="badge badge-gray">${qtdViagens} viagem${qtdViagens === 1 ? '' : 'ns'}</span></td>
       <td>${stats.totalVendas}</td>
       <td>${Utils.formatCurrency(stats.totalValor)}</td>
+      <td>${comissaoPct ? comissaoPct.toFixed(1).replace(/\.0$/,'') + '%' : '<span class="text-gray">—</span>'}</td>
       <td class="td-actions">
         <button class="btn btn-outline btn-sm" onclick="openModalVendedor('${v.id}')">✎</button>
         <button class="btn btn-sm" style="background:#FEE2E2;color:#B91C1C" onclick="desativarVendedor('${v.id}')">Desativar</button>
@@ -76,16 +87,18 @@ async function renderVendedores() {
     <div><h1>Vendedores</h1><div class="page-header-sub">Cadastro de vendedores e as viagens em que cada um vendeu passagens.</div></div>
     <button class="btn btn-primary" onclick="openModalVendedor()">+ Novo vendedor</button>
   </div>
-  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+  <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:24px">
     <div class="stat-card"><div class="stat-label">Vendedores</div><div class="stat-value">${ativos.length}</div></div>
     <div class="stat-card"><div class="stat-label">Vendas com vendedor atribuído</div><div class="stat-value">${passageiros.filter(p => p.vendedorId).length}</div></div>
+    <div class="stat-card"><div class="stat-label">Comissão do total vendido</div><div class="stat-value blue sv-currency">${Utils.formatCurrency(totalComissaoVendido)}</div></div>
+    <div class="stat-card"><div class="stat-label">Comissão do total recebido</div><div class="stat-value green sv-currency">${Utils.formatCurrency(totalComissaoRecebido)}</div></div>
     <div class="stat-card"><div class="stat-label">Desativados</div><div class="stat-value gray">${inativos.length}</div></div>
   </div>
   ${!ativos.length
     ? `<div class="empty-state"><h3>Nenhum vendedor cadastrado</h3><p>Cadastre vendedores para relacioná-los às vendas das excursões.</p>
         <button class="btn btn-primary mt-16" onclick="openModalVendedor()">+ Novo vendedor</button></div>`
     : `<div class="table-wrapper"><table>
-        <thead><tr><th>Nome</th><th>WhatsApp</th><th>Documento</th><th>Viagens</th><th>Vendas</th><th>Total vendido</th><th></th></tr></thead>
+        <thead><tr><th>Nome</th><th>WhatsApp</th><th>Documento</th><th>Viagens</th><th>Vendas</th><th>Total vendido</th><th>Comissão</th><th></th></tr></thead>
         <tbody>${linhas}</tbody>
       </table></div>
 
@@ -114,6 +127,8 @@ async function openModalVendedor(id = null) {
         <input class="form-control" name="whatsapp" value="${Utils.escHtml(val.whatsapp || '')}"/></div>
       <div class="form-group"><label class="form-label">Documento</label>
         <input class="form-control" name="documento" value="${Utils.escHtml(val.documento || '')}"/></div>
+      <div class="form-group"><label class="form-label">Comissão (%)</label>
+        <input class="form-control" type="number" name="comissaoPercentual" value="${val.comissaoPercentual ?? ''}" min="0" max="100" step="0.1" placeholder="Ex: 5"/></div>
     </div>
     <div class="form-group"><label class="form-label">Observações</label>
       <textarea class="form-control" name="observacoes" rows="2">${Utils.escHtml(val.observacoes || '')}</textarea></div>

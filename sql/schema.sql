@@ -55,6 +55,9 @@ CREATE TABLE IF NOT EXISTS vendedores (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- % de comissão do vendedor sobre as vendas (adicionado depois da criação
+-- inicial da tabela — ALTER...IF NOT EXISTS para não quebrar bancos já existentes).
+ALTER TABLE vendedores ADD COLUMN IF NOT EXISTS comissao_percentual NUMERIC(6,2);
 
 -- ── CLIENTES ─────────────────────────────────────────────────────────
 -- Extraído dos passageiros. "chave_dedupe" é a mesma lógica de
@@ -253,3 +256,18 @@ CREATE TABLE IF NOT EXISTS meta (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- ── USUÁRIOS (login, admin e permissão por página) ──────────────────
+CREATE TABLE IF NOT EXISTS usuarios (
+    id                  UUID PRIMARY KEY,
+    username            TEXT NOT NULL,
+    senha_hash          TEXT NOT NULL,
+    nome                TEXT,
+    role                TEXT NOT NULL DEFAULT 'user', -- 'admin' | 'user'
+    paginas             JSONB NOT NULL DEFAULT '[]',  -- páginas liberadas quando role='user'
+    ativo               BOOLEAN NOT NULL DEFAULT true,
+    deve_trocar_senha   BOOLEAN NOT NULL DEFAULT false,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_username ON usuarios (lower(username));

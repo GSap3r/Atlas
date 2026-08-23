@@ -41,7 +41,7 @@ async function renderDashboard() {
       const prev  = pag.reduce((s,p)=>s+(parseFloat(p.valorFinal != null ? p.valorFinal : p.valorCombinado)||0),0);
       return {
         nome: e.nome.length > 14 ? e.nome.slice(0,13)+'…' : e.nome,
-        rec, prev, cor: e.cor||'#2E93B0'
+        rec, prev, cor: e.cor||'#0F766E'
       };
     });
 
@@ -71,7 +71,6 @@ async function renderDashboard() {
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
         <button class="btn btn-primary" style="padding:12px 28px;font-size:15px" onclick="openModalExcursao()">+ Nova excursão</button>
-        <button class="btn btn-outline" style="padding:12px 28px;font-size:15px" onclick="Backup.importar_ui()">Importar backup</button>
       </div>
     </div>`;
 
@@ -88,15 +87,13 @@ async function renderDashboard() {
       <p class="dash-sub">${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-outline btn-sm" onclick="Backup.exportar()">Backup</button>
-      <button class="btn btn-outline btn-sm" onclick="Backup.importar_ui()">Importar</button>
       <button class="btn btn-primary btn-sm" onclick="openModalExcursao()">+ Nova excursão</button>
     </div>
   </div>
 
   <div class="dash-kpi-row">
     ${[
-      { icon:'M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z', bg:'#EFF6FF', cor:'#2E93B0', val: excAtivas.length + '<span style="font-size:13px;font-weight:400;color:var(--gray);margin-left:4px">/ '+excursoes.length+'</span>', lbl:'Excursões ativas', trend: excPassadas.length+'d concluídas', tcls:'trend-gray' },
+      { icon:'M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z', bg:'#EAF6F5', cor:'#0F766E', val: excAtivas.length + '<span style="font-size:13px;font-weight:400;color:var(--gray);margin-left:4px">/ '+excursoes.length+'</span>', lbl:'Excursões ativas', trend: excPassadas.length+'d concluídas', tcls:'trend-gray' },
       { icon:'M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z', bg:'#F0FDF4', cor:'#12B76A', val: passAtivos.length, lbl:'Passageiros', trend: confirmados+' confirmados', tcls:'trend-green' },
       { icon:'M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z', bg:'#F0FDF4', cor:'#12B76A', val: Utils.formatCurrency(recebido), lbl:'Total recebido', trend: pctRecebido.toFixed(0)+'% da meta', tcls:'trend-green', currency:true },
       { icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z', bg:'#FFFAEB', cor:'#F79009', val: Utils.formatCurrency(aReceber), lbl:'A receber', trend: pendentes+' pendentes', tcls:'trend-orange', currency:true },
@@ -131,8 +128,8 @@ async function renderDashboard() {
       </div>
       <div style="position:relative;height:190px"><canvas id="chartBarras" style="width:100%;height:190px"></canvas></div>
       <div style="display:flex;gap:16px;margin-top:8px;font-size:12px;color:var(--gray)">
-        <span><span style="display:inline-block;width:10px;height:10px;background:#2E93B055;border-radius:2px;margin-right:4px"></span>Previsto</span>
-        <span><span style="display:inline-block;width:10px;height:10px;background:#2E93B0;border-radius:2px;margin-right:4px"></span>Recebido</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#0F766E55;border-radius:2px;margin-right:4px"></span>Previsto</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#0F766E;border-radius:2px;margin-right:4px"></span>Recebido</span>
       </div>
     </div>
     <div class="dash-chart-card">
@@ -141,7 +138,7 @@ async function renderDashboard() {
         <canvas id="chartDonut" width="140" height="140"></canvas>
       </div>
       <div style="display:flex;flex-direction:column;gap:7px">
-        ${[['#12B76A','Confirmados',statusCount.confirmado],['#F2B807','Reservados',statusCount.reservado],['#F79009','Pendentes',statusCount.pendente]]
+        ${[['#12B76A','Confirmados',statusCount.confirmado],['#C1502E','Reservados',statusCount.reservado],['#F79009','Pendentes',statusCount.pendente]]
           .map(([c,l,n])=>`<div style="display:flex;align-items:center;gap:8px;font-size:13px">
             <span style="width:9px;height:9px;border-radius:50%;background:${c};flex-shrink:0"></span>
             <span style="flex:1;color:var(--gray)">${l}</span><span style="font-weight:700">${n}</span>
@@ -172,12 +169,12 @@ async function renderDashboard() {
         const pct = parseInt(e.vagas) > 0 ? Math.min(100,Math.round(pE.length/parseInt(e.vagas)*100)) : 0;
         const dias = Math.ceil((new Date(e.dataSaida)-new Date())/86400000);
         return `<div class="dash-exc-row" onclick="navigate('excursao',{excursaoId:'${e.id}',tab:'passageiros'})">
-          <div class="dash-exc-dot" style="background:${e.cor||'#2E93B0'}"></div>
+          <div class="dash-exc-dot" style="background:${e.cor||'#0F766E'}"></div>
           <div style="flex:1;min-width:0">
             <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${Utils.escHtml(e.nome)}</div>
             <div style="font-size:12px;color:var(--gray);margin-top:1px">${Utils.formatDate(e.dataSaida)} · ${Utils.escHtml(e.destino||'')}</div>
             <div style="background:#E4E7EC;border-radius:99px;height:4px;overflow:hidden;margin-top:6px;width:100%">
-              <div style="background:${e.cor||'#2E93B0'};height:100%;width:${pct}%;border-radius:99px"></div>
+              <div style="background:${e.cor||'#0F766E'};height:100%;width:${pct}%;border-radius:99px"></div>
             </div>
           </div>
           <div style="text-align:right;flex-shrink:0;margin-left:12px">
@@ -198,7 +195,7 @@ async function renderDashboard() {
         : devedores.map((d,i)=>{
           const maxS = devedores[0].saldo;
           const pct  = maxS > 0 ? (d.saldo/maxS)*100 : 0;
-          const cs   = ['#F04438','#F79009','#F2B807','#2E93B0','#667085'];
+          const cs   = ['#F04438','#F79009','#C1502E','#0F766E','#667085'];
           return `<div style="margin-bottom:12px">
             <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
               <span style="font-weight:500">${Utils.escHtml(d.nome.split(' ').slice(0,2).join(' '))}</span>
@@ -217,7 +214,7 @@ async function renderDashboard() {
         <div class="dash-chart-sub">Todas as excursões</div>
       </div>
       ${[
-        ['Receita prevista', receitaPrev, '#2E93B0', false],
+        ['Receita prevista', receitaPrev, '#0F766E', false],
         ['Recebido',         recebido,   '#12B76A', false],
         ['A receber',        aReceber,   '#F79009', false],
         ['Custos totais',    custoTotal, '#F04438', false],
@@ -265,7 +262,7 @@ function renderExcCard(exc, passageiros, pagamentos, contas, tipos) {
   return `
   <div class="exc-card" onclick="navigate('excursao',{excursaoId:'${exc.id}',tab:'passageiros'})">
     <div class="exc-card-header">
-      <span class="exc-card-label" style="background:${Utils.escHtml(exc.cor||'#2E93B0')}"></span>
+      <span class="exc-card-label" style="background:${Utils.escHtml(exc.cor||'#0F766E')}"></span>
       <div class="exc-card-info">
         <div class="exc-card-name">${Utils.escHtml(exc.nome)}</div>
         <div class="exc-card-dest">${Utils.escHtml(exc.destino||'')}</div>
@@ -385,7 +382,7 @@ async function renderExcursao() {
     <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     Voltar para Viagens
   </button>
-  <div class="exc-detail-hero" style="background:${Utils.escHtml(exc.cor||'#2E93B0')}">
+  <div class="exc-detail-hero" style="background:${Utils.escHtml(exc.cor||'#0F766E')}">
     <div class="flex-between flex-wrap gap-8" style="margin-bottom:16px">
       <div>
         <h1>${Utils.escHtml(exc.nome)}</h1>

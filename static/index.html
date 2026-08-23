@@ -7,42 +7,66 @@
   <title>Atlas — Organizador de Excursões</title>
   <link rel="icon" type="image/png" href="assets/img/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
 <body>
+<div id="loginScreen" class="login-screen" style="display:none">
+  <div class="login-card">
+    <img src="assets/img/logo.png" alt="Atlas" class="login-logo"/>
+    <h1 class="login-title">Atlas</h1>
+    <p class="login-sub">Entre para continuar</p>
+    <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+      <div class="form-group">
+        <label class="form-label">Usuário</label>
+        <input class="form-control" id="loginUsername" name="username" autocomplete="username" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input class="form-control" id="loginSenha" name="senha" type="password" autocomplete="current-password" required/>
+      </div>
+      <div id="loginErro" class="login-erro" style="display:none"></div>
+      <button type="submit" class="btn btn-primary w-full" id="loginSubmitBtn">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<div id="appShell" style="display:none">
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
     <img src="assets/img/logo.png" alt="Atlas" class="brand-logo"/>
     <span class="brand-text">Atlas</span>
+    <button class="sidebar-collapse-btn" id="sidebarCollapseToggle" title="Recolher menu">
+      <svg viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18"/></svg>
+    </button>
   </div>
   <nav class="sidebar-nav">
-    <a href="#" class="nav-item active" data-page="dashboard">
-      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Dashboard</a>
-    <a href="#" class="nav-item" data-page="excursoes">
-      <svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>Excursões</a>
-    <a href="#" class="nav-item" data-page="cobrancas">
-      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>Cobranças</a>
-    <a href="#" class="nav-item" data-page="auditoria">
-      <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>Auditoria</a>
-    <a href="#" class="nav-item" data-page="clientes">
-      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Clientes</a>
-    <a href="#" class="nav-item" data-page="tiposPassageiro">
-      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Tipos de Passageiro</a>
-    <a href="#" class="nav-item" data-page="fornecedores">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>Fornecedores</a>
-    <a href="#" class="nav-item" data-page="vendedores">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7.5L4.5 7 12 4.5 19.5 7 12 9.5zM2 17l10 5 10-5v-6l-10 5-10-5v6z"/></svg>Vendedores</a>
-    <a href="#" class="nav-item" data-page="planejador">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>Planejador</a>
-    <a href="#" class="nav-item" data-page="backup">
-      <svg viewBox="0 0 24 24"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/></svg>Backup</a>
-    <a href="#" class="nav-item" data-page="configuracoes">
-      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>Configurações</a>
+    <a href="#" class="nav-item active" data-page="dashboard" title="Dashboard">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="nav-label">Dashboard</span></a>
+    <a href="#" class="nav-item" data-page="excursoes" title="Excursões">
+      <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg><span class="nav-label">Excursões</span></a>
+    <a href="#" class="nav-item" data-page="cobrancas" title="Cobranças">
+      <svg viewBox="0 0 24 24"><rect x="1" y="5" width="22" height="15" rx="2"/><path d="M1 10h22"/></svg><span class="nav-label">Cobranças</span></a>
+    <a href="#" class="nav-item" data-page="auditoria" title="Auditoria">
+      <svg viewBox="0 0 24 24"><path d="M9 3h6a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M17 5h1a2 2 0 012 2v13a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h1"/><path d="M9 13l2 2 4-4"/></svg><span class="nav-label">Auditoria</span></a>
+    <a href="#" class="nav-item" data-page="clientes" title="Clientes">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nav-label">Clientes</span></a>
+    <a href="#" class="nav-item" data-page="tiposPassageiro" title="Tipos de Passageiro">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="nav-label">Tipos de Passageiro</span></a>
+    <a href="#" class="nav-item" data-page="fornecedores" title="Fornecedores">
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span class="nav-label">Fornecedores</span></a>
+    <a href="#" class="nav-item" data-page="vendedores" title="Vendedores">
+      <svg viewBox="0 0 24 24"><path d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.4" fill="currentColor" stroke="none"/></svg><span class="nav-label">Vendedores</span></a>
+    <a href="#" class="nav-item" data-page="planejador" title="Planejador">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span class="nav-label">Planejador</span></a>
+    <a href="#" class="nav-item" data-page="configuracoes" title="Configurações">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="nav-label">Configurações</span></a>
   </nav>
   <div class="sidebar-footer">
-    <span class="footer-brand"><img src="assets/img/logo.png" alt="Atlas" class="footer-logo"/>Atlas</span>
-    <small>v2.0</small>
+    <span class="footer-brand"><img src="assets/img/logo.png" alt="Atlas" class="footer-logo"/><span class="nav-label" id="footerUserName">Atlas</span></span>
+    <button class="sidebar-logout-btn" id="logoutBtn" title="Sair" onclick="handleLogoutClick()">
+      <svg viewBox="0 0 24 24"><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/></svg>
+    </button>
   </div>
 </aside>
 
@@ -52,10 +76,10 @@
       <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
     </button>
     <div class="topbar-title" id="topbarTitle">Dashboard</div>
-    <div id="backupIndicator" style="display:flex;align-items:center;margin-right:4px"></div>
     <div class="topbar-actions" id="topbarActions"></div>
   </header>
   <main class="content" id="mainContent"></main>
+</div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay" style="display:none">
@@ -71,9 +95,9 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="assets/js/db.js"></script>
+<script src="assets/js/auth.js"></script>
 <script src="assets/js/utils.js"></script>
 <script src="assets/js/license.js"></script>
-<script src="assets/js/backup.js"></script>
 <script src="assets/js/pdf.js"></script>
 <script src="assets/js/planner.js"></script>
 <script src="assets/js/xlsx.full.min.js"></script>

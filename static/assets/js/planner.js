@@ -77,7 +77,7 @@ function renderSimCard(s, fin) {
   return `
   <div class="sim-card">
     <div class="sim-card-header">
-      <div class="sim-card-color" style="background:${s.cor||'#2E93B0'}"></div>
+      <div class="sim-card-color" style="background:${s.cor||'#0F766E'}"></div>
       <div class="sim-card-info">
         <div class="sim-card-nome">${Utils.escHtml(s.nome)}</div>
         <div class="sim-card-dest text-gray" style="font-size:13px">${Utils.escHtml(s.destino||'')} ${s.dataSaida ? '· '+Utils.formatDate(s.dataSaida) : ''}</div>
@@ -143,8 +143,8 @@ function backToList() {
 // ── STEP 1: DADOS DA SIMULAÇÃO ────────────────────────────────────────
 function renderStep1(sim) {
   const v = sim || {};
-  const corSels = ['#2E93B0','#F2B807','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4']
-    .map(c => `<div class="color-opt ${(v.cor||'#2E93B0')===c?'selected':''}" style="background:${c}" data-cor="${c}" onclick="selecionarCorSim('${c}')"></div>`).join('');
+  const corSels = ['#0F766E','#C1502E','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4']
+    .map(c => `<div class="color-opt ${(v.cor||'#0F766E')===c?'selected':''}" style="background:${c}" data-cor="${c}" onclick="selecionarCorSim('${c}')"></div>`).join('');
 
   return `
   ${backToList()}
@@ -199,7 +199,7 @@ function renderStep1(sim) {
       <div class="form-group">
         <label class="form-label">Cor da simulação</label>
         <div class="color-picker-row" id="colorPickerSim">${corSels}</div>
-        <input type="hidden" name="cor" id="corSimSelecionada" value="${v.cor||'#2E93B0'}"/>
+        <input type="hidden" name="cor" id="corSimSelecionada" value="${v.cor||'#0F766E'}"/>
       </div>
       <div class="form-group">
         <label class="form-label">Observações gerais</label>
@@ -658,10 +658,33 @@ async function renderComparador() {
 }
 
 // ── STEP 7: PLANO FINAL ───────────────────────────────────────────────
+function pendenciasPlano(sim, custos, fin) {
+  const pend = [];
+  if (!sim.destino)               pend.push('Destino não definido (aba Dados)');
+  if (!sim.dataSaida)             pend.push('Data de saída não definida (aba Dados)');
+  if (!parseFloat(sim.valorPax))  pend.push('Valor por passageiro não definido (aba Receita)');
+  if (!custos.length)             pend.push('Nenhum custo cadastrado (aba Custos)');
+  if (fin.lucroPrevisto < 0)      pend.push('A simulação está prevendo prejuízo com os valores atuais');
+  return pend;
+}
+
+async function finalizarPlano(simId) {
+  const sim    = await DB.getById('simulacoes', simId);
+  const custos = (await DB.getAll('simCustos')).filter(c => c.simId === simId);
+  const fin    = calcSimFinanceiro(sim, custos);
+  const pend   = pendenciasPlano(sim, custos, fin);
+  if (pend.length) {
+    const msg = 'Este plano tem pendências:\n\n- ' + pend.join('\n- ') + '\n\nFinalizar e criar a excursão mesmo assim?';
+    if (!confirm(msg)) return;
+  }
+  await criarExcursaoDoPlano(simId);
+}
+
 function renderPlanoFinal(sim, custos) {
   const fin    = calcSimFinanceiro(sim, custos);
   const st     = simStatus(fin);
   const jaVirou = !!sim.excursaoId;
+  const pend    = jaVirou ? [] : pendenciasPlano(sim, custos, fin);
 
   const checklistItems = [
     'Confirmar disponibilidade do transporte',
@@ -687,14 +710,22 @@ function renderPlanoFinal(sim, custos) {
   <h2 class="planner-title">${Utils.escHtml(sim.nome)}</h2>
   ${plannerNav(sim.id, 7)}
 
+  ${pend.length ? `
+  <div class="planner-card no-print" style="margin-bottom:12px;border-color:var(--orange);background:#FFFAEB">
+    <div class="fw-600 text-orange mb-8">⚠ Pendências antes de finalizar</div>
+    <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--dark)">
+      ${pend.map(p => `<li>${Utils.escHtml(p)}</li>`).join('')}
+    </ul>
+  </div>` : ''}
+
   <div class="planner-card no-print" style="margin-bottom:12px">
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
       <button class="btn btn-outline" onclick="window.print()">Exportar / Imprimir</button>
       ${jaVirou
         ? `<span class="badge badge-blue" style="font-size:13px;padding:8px 14px">✓ Excursão já criada</span>`
-        : `<button class="btn btn-primary" onclick="criarExcursaoDoPlano('${sim.id}')">
+        : `<button class="btn btn-primary" onclick="finalizarPlano('${sim.id}')">
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Criar Excursão
+            Finalizar${pend.length ? ' (com pendências)' : ''}
           </button>`
       }
     </div>
@@ -702,7 +733,7 @@ function renderPlanoFinal(sim, custos) {
 
   <div class="plano-final-wrap">
     <div class="plano-header">
-      <div><b>Atlas</b> <span style="color:#F2B807;font-weight:700">›</span> Plano de Excursão</div>
+      <div><b>Atlas</b> <span style="color:#C1502E;font-weight:700">›</span> Plano de Excursão</div>
       <span class="badge ${st.cls}">${st.label}</span>
     </div>
 
@@ -760,7 +791,7 @@ async function criarExcursaoDoPlano(simId) {
     valorPassageiro: fin.valorSugerido || sim.valorPax || 0,
     localEmbarque:  '',
     observacoes:    `[Atlas Planejador] ${sim.obs||''}\nMeta: ${fin.pontoEquilibrio} pax · Lucro prev.: ${Utils.formatCurrency(fin.lucroPrevisto)}`,
-    cor:            sim.cor || '#2E93B0',
+    cor:            sim.cor || '#0F766E',
   };
   const excSalva = await DB.save('excursoes', excursao);
 
@@ -877,7 +908,7 @@ function simStatus(fin) {
 window.Planner = {
   renderPlanejador, renderPlanejadorStep,
   calcSimFinanceiro, simStatus,
-  novaSimulacao, criarExcursaoDoPlano, excluirSim,
+  novaSimulacao, criarExcursaoDoPlano, excluirSim, finalizarPlano, pendenciasPlano,
   salvarStep1, salvarStep3, salvarCustoSim, editarCustoSim, excluirCustoSim,
   openModalCustoSim, selecionarCorSim,
   atualizarPreviewReceita, simManualCalc,

@@ -13,7 +13,7 @@ const TIPOS_EXC_NAV    = ['Bate e volta','Final de semana','Pacote com hospedage
 const FORMAS_PAGAMENTO = ['Pix','Dinheiro','Cartão','Boleto','Transferência','Outro'];
 const STATUS_PASSAGEIRO= ['reservado','confirmado','pendente','cancelado'];
 const STATUS_CONTA     = ['a pagar','pago','vencido'];
-const CAT_FORNECEDOR   = ['Transporte','Hotel','Camisas','Seguro','Guia','Ingresso','Alimentação','Marketing','Brindes','Outros'];
+const CAT_FORNECEDOR   = ['Transporte','Hospedagem','Seguro','Guia','Ingresso','Alimentação','Marketing','Brindes','Outros'];
 const CATEGORIAS_CONTA = ['Transporte / Ônibus','Hospedagem','Alimentação','Ingressos / Passeios','Guia / Equipe','Taxas','Pedágios','Marketing / Divulgação','Brindes','Reserva de segurança','Outros'];
 const TIPOS_CUSTO      = [
   { value: 'manual',      label: 'Manual (valor fixo digitado)' },
@@ -23,25 +23,91 @@ const TIPOS_CUSTO      = [
   { value: 'por_tipo',    label: 'Por tipo específico de passageiro' },
   { value: 'por_pacote',  label: 'Por pacote específico' },
 ];
-const CORES = ['#2E93B0','#F2B807','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4','#64748B','#10B981'];
+const CORES = ['#0F766E','#C1502E','#12B76A','#F04438','#F79009','#8B5CF6','#EC4899','#06B6D4','#64748B','#10B981'];
 
 // ── INIT ─────────────────────────────────────────────────────────────
 async function init() {
   await DB.open();
+  const user = await Auth.checkSession();
+  if (!user) { showLoginScreen(); return; }
+  await startApp(user);
+}
+
+// ── LOGIN / SESSÃO ──────────────────────────────────────────────────
+function showLoginScreen(erro) {
+  document.getElementById('appShell').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  const erroBox = document.getElementById('loginErro');
+  if (erro) { erroBox.textContent = erro; erroBox.style.display = 'block'; }
+  else      { erroBox.style.display = 'none'; }
+  document.getElementById('loginUsername')?.focus();
+}
+
+async function handleLoginSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loginSubmitBtn');
+  const fd  = new FormData(e.target);
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  const { ok, erro } = await Auth.login(fd.get('username'), fd.get('senha'));
+  btn.disabled = false; btn.textContent = 'Entrar';
+  if (!ok) { showLoginScreen(erro); return; }
+  document.getElementById('loginSenha').value = '';
+  await startApp(Auth.getUser());
+}
+
+async function handleLogoutClick() {
+  await Auth.logout();
+  location.reload();
+}
+
+const TODAS_PAGINAS = ['dashboard','excursoes','cobrancas','auditoria','clientes','tiposPassageiro','fornecedores','vendedores','planejador','configuracoes'];
+
+function aplicarPermissoesNav() {
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.style.display = Auth.hasAccess(el.dataset.page) ? '' : 'none';
+  });
+}
+
+function paginaInicialPermitida() {
+  if (Auth.hasAccess('dashboard')) return 'dashboard';
+  return TODAS_PAGINAS.find(p => Auth.hasAccess(p)) || 'dashboard';
+}
+
+function avisarTrocarSenha() {
+  openModal('Troque sua senha', `
+    <p>Este é um login temporário. Por segurança, troque sua senha agora em <b>Configurações → Minha conta</b>.</p>
+  `, '', [
+    { label: 'Trocar agora', cls: 'btn-primary', fn: "closeModal();cfgNavTab('conta')" },
+    { label: 'Depois',       cls: 'btn-outline', fn: 'closeModal()' },
+  ]);
+}
+
+async function startApp(user) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = '';
+  aplicarPermissoesNav();
+  const footerName = document.getElementById('footerUserName');
+  if (footerName) footerName.textContent = user.nome || user.username;
+
+  if (!TODAS_PAGINAS.some(p => Auth.hasAccess(p))) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="empty-state"><h3>Sem acesso a nenhuma página</h3>
+      <p>Fale com o administrador do sistema para liberar seu acesso.</p></div>`;
+    return;
+  }
+
+  document.getElementById('mainContent').innerHTML = '<div style="padding:48px;text-align:center;color:#667085">Carregando...</div>';
   await migrarDadosAntigos();
   setupNav();
   setupModal();
   setupSidebarOverlay();
+  setupSidebarCollapse();
   document.getElementById('menuToggle').addEventListener('click', () => {
     const open = document.getElementById('sidebar').classList.toggle('open');
     document.querySelector('.sidebar-overlay')?.classList.toggle('visible', open);
   });
-  await Backup.carregarIndicador();
-  Backup.verificarBackupAutomatico();
-  Backup.verificarBackupAtrasadoEAvisar();
-  Backup.iniciarAgendadorBackup();
-  navigate('dashboard');
-
+  navigate(paginaInicialPermitida());
+  if (user.deveTrocarSenha) avisarTrocarSenha();
 }
 
 function _injectLicenseFooter() {
@@ -54,6 +120,17 @@ function _injectLicenseFooter() {
   bar.className = 'license-footer-bar';
   bar.textContent = txt;
   document.body.appendChild(bar);
+}
+
+function setupSidebarCollapse() {
+  const btn = document.getElementById('sidebarCollapseToggle');
+  if (!btn) return;
+  const collapsed = localStorage.getItem('atlasSidebarCollapsed') === '1';
+  document.body.classList.toggle('sidebar-collapsed', collapsed);
+  btn.addEventListener('click', () => {
+    const nowCollapsed = document.body.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('atlasSidebarCollapsed', nowCollapsed ? '1' : '0');
+  });
 }
 
 function setupSidebarOverlay() {
@@ -151,6 +228,10 @@ function setupNav() {
 }
 
 function navigate(page, params = {}) {
+  if (!Auth.hasAccess(page)) {
+    Utils.showToast('Você não tem acesso a essa página.', 'warn');
+    return;
+  }
   state.page = page;
   Object.assign(state, params);
   document.querySelectorAll('.nav-item').forEach(el => {
@@ -181,7 +262,6 @@ async function render() {
     fornecedores:    ['Fornecedores',       renderFornecedores],
     vendedores:      ['Vendedores',         renderVendedores],
     configuracoes:   ['Configurações',      renderConfiguracoes],
-    backup:          ['Backup',             renderBackup],
   };
 
   if (state.page === 'excursoes') {
@@ -192,7 +272,6 @@ async function render() {
     const exc = await DB.getById('excursoes', state.excursaoId);
     topbarTitle.textContent = exc?.nome || 'Excursão';
     topbarActions.innerHTML = `
-      <button class="btn btn-outline btn-sm" onclick="Backup.exportarExcursao('${state.excursaoId}')">↓ Exportar</button>
       <button class="btn btn-outline btn-sm" onclick="openModalExcursao('${state.excursaoId}')">Editar</button>
       <button class="btn btn-danger btn-sm"  onclick="confirmarExcluirExcursao('${state.excursaoId}')">Excluir</button>`;
     content.innerHTML = await renderExcursao();

@@ -62,6 +62,7 @@ TABLES = {
             ("whatsapp", "whatsapp", "text"),
             ("observacoes", "observacoes", "text"),
             ("ativo", "ativo", "bool"),
+            ("comissaoPercentual", "comissao_percentual", "numeric"),
         ],
     },
     "excursoes": {

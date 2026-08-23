@@ -186,7 +186,7 @@ function drawDashboardCharts(ED, SC, PCT) {
     const dpr = window.devicePixelRatio||1;
     cv.width=140*dpr; cv.height=140*dpr; ctx.scale(dpr,dpr);
     const cx=70,cy=70,ro=60,ri=40;
-    const data=[{v:SC.confirmado,c:'#12B76A'},{v:SC.reservado,c:'#F2B807'},{v:SC.pendente,c:'#F79009'}];
+    const data=[{v:SC.confirmado,c:'#12B76A'},{v:SC.reservado,c:'#C1502E'},{v:SC.pendente,c:'#F79009'}];
     const total=data.reduce((s,d)=>s+d.v,0)||1;
     let a=-Math.PI/2;
     data.forEach(d=>{

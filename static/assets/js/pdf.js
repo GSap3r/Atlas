@@ -5,11 +5,11 @@ const PDF = (() => {
 
   const CSS_BASE = `
     body { font-family: Arial, sans-serif; font-size: 13px; color: #111; margin: 30px; }
-    h1   { font-size: 20px; margin-bottom: 4px; color: #2E93B0; }
+    h1   { font-size: 20px; margin-bottom: 4px; color: #0F766E; }
     h2   { font-size: 15px; margin: 20px 0 8px; color: #172033; border-bottom: 1px solid #E4E7EC; padding-bottom: 4px; }
     .meta { font-size: 13px; color: #555; margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-    th    { background: #2E93B0; color: #fff; padding: 8px 10px; text-align: left; font-size: 12px; }
+    th    { background: #0F766E; color: #fff; padding: 8px 10px; text-align: left; font-size: 12px; }
     td    { padding: 8px 10px; border-bottom: 1px solid #e5e5e5; }
     tr:nth-child(even) td { background: #f9f9f9; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }

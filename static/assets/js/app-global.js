@@ -82,14 +82,12 @@ async function salvarExcursao(e, id) {
 
 async function confirmarExcluirExcursao(id) {
   const exc = await DB.getById('excursoes', id);
-  await Backup.modalBackupObrigatorio('Antes de excluir', async () => {
-    openModal('Excluir excursão', `
-      <p>Excluir <b>${Utils.escHtml(exc?.nome||'')}</b> e <b>todos os dados relacionados</b>.</p>
-      <p class="text-red mt-8 fw-600">Esta ação não pode ser desfeita.</p>`, '', [
-      { label:'Cancelar',    cls:'btn-outline', fn:'closeModal()' },
-      { label:'Excluir tudo',cls:'btn-danger',  fn:`excluirExcursao('${id}')` }
-    ]);
-  });
+  openModal('Excluir excursão', `
+    <p>Excluir <b>${Utils.escHtml(exc?.nome||'')}</b> e <b>todos os dados relacionados</b>.</p>
+    <p class="text-red mt-8 fw-600">Esta ação não pode ser desfeita.</p>`, '', [
+    { label:'Cancelar',    cls:'btn-outline', fn:'closeModal()' },
+    { label:'Excluir tudo',cls:'btn-danger',  fn:`excluirExcursao('${id}')` }
+  ]);
 }
 
 async function excluirExcursao(id) {
@@ -689,13 +687,15 @@ async function renderConfiguracoes() {
   const cfgMsg   = await DB.getById('meta','msgCobranca');
   const msgAtual = cfgMsg?.value || 'Olá {nome}! Você tem um saldo em aberto de {valor} referente à excursão "{excursao}". Por favor, entre em contato para regularizar. Obrigado!';
 
-  const sAtivo  = 'padding:10px 20px;border:none;background:none;font-size:14px;cursor:pointer;border-bottom:3px solid #2E93B0;font-weight:600;color:#2E93B0;';
+  const sAtivo  = 'padding:10px 20px;border:none;background:none;font-size:14px;cursor:pointer;border-bottom:3px solid #0F766E;font-weight:600;color:#0F766E;';
   const sInativo = 'padding:10px 20px;border:none;background:none;font-size:14px;cursor:pointer;border-bottom:3px solid transparent;font-weight:500;color:#666;';
 
   const tabBar =
-    '<div style="border-bottom:1px solid #E4E7EC;display:flex;gap:4px;margin-bottom:20px">' +
+    '<div style="border-bottom:1px solid #E4E7EC;display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap">' +
       '<button style="' + (tab === 'licenca'   ? sAtivo : sInativo) + '" data-cfg-tab="licenca">Licenca</button>' +
       '<button style="' + (tab === 'mensagens' ? sAtivo : sInativo) + '" data-cfg-tab="mensagens">Mensagens</button>' +
+      '<button style="' + (tab === 'conta'     ? sAtivo : sInativo) + '" data-cfg-tab="conta">Minha conta</button>' +
+      (Auth.isAdmin() ? '<button style="' + (tab === 'usuarios' ? sAtivo : sInativo) + '" data-cfg-tab="usuarios">Usuários</button>' : '') +
     '</div>';
 
   const tabLicenca = tab === 'licenca'
@@ -729,14 +729,158 @@ async function renderConfiguracoes() {
       '</div></div>'
     : '';
 
+  const tabConta = tab === 'conta'
+    ? '<div class="card"><div class="card-body">' +
+        '<div class="section-title" style="margin-bottom:14px">Trocar minha senha</div>' +
+        '<form id="formMinhaSenha" onsubmit="salvarMinhaSenhaForm(event)">' +
+          '<div class="form-group"><label class="form-label">Senha atual</label>' +
+            '<input class="form-control" type="password" name="senhaAtual" autocomplete="current-password" required/></div>' +
+          '<div class="form-group"><label class="form-label">Nova senha</label>' +
+            '<input class="form-control" type="password" name="novaSenha" autocomplete="new-password" minlength="6" required/>' +
+            '<div class="form-hint">Mínimo de 6 caracteres.</div></div>' +
+          '<button type="submit" class="btn btn-primary">Salvar nova senha</button>' +
+        '</form>' +
+      '</div></div>'
+    : '';
+
+  const tabUsuarios = (tab === 'usuarios' && Auth.isAdmin())
+    ? await renderTabUsuarios()
+    : '';
+
+  const wide = tab === 'usuarios' ? '960px' : '720px';
   const html = '<div class="page-header"><h1>Configurações</h1></div>' +
-    '<div style="max-width:720px">' + tabBar + tabLicenca + tabMensagens + '</div>';
+    '<div style="max-width:' + wide + '">' + tabBar + tabLicenca + tabMensagens + tabConta + tabUsuarios + '</div>';
   setTimeout(() => {
     document.querySelectorAll('[data-cfg-tab]').forEach(btn => {
       btn.addEventListener('click', () => cfgNavTab(btn.dataset.cfgTab));
     });
   }, 0);
   return html;
+}
+
+// ── MINHA CONTA (trocar a própria senha) ──────────────────────────────
+async function salvarMinhaSenhaForm(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const { ok, erro } = await Auth.trocarMinhaSenha(fd.get('senhaAtual'), fd.get('novaSenha'));
+  if (!ok) return Utils.showToast(erro, 'error');
+  Utils.showToast('Senha alterada com sucesso!');
+  e.target.reset();
+}
+
+// ── USUÁRIOS (admin) ───────────────────────────────────────────────────
+const PAGINA_LABELS = {
+  dashboard: 'Dashboard', excursoes: 'Excursões', cobrancas: 'Cobranças',
+  auditoria: 'Auditoria', clientes: 'Clientes', tiposPassageiro: 'Tipos de Passageiro',
+  fornecedores: 'Fornecedores', vendedores: 'Vendedores', planejador: 'Planejador',
+  configuracoes: 'Configurações',
+};
+
+async function renderTabUsuarios() {
+  const usuarios = await Auth.listarUsuarios();
+  const meuId = Auth.getUser()?.id;
+
+  const rows = usuarios.map(u => {
+    const paginasBadges = u.role === 'admin'
+      ? '<span class="badge badge-blue">Acesso total</span>'
+      : (u.paginas || []).map(p => `<span class="badge badge-gray" style="font-size:11px">${PAGINA_LABELS[p] || p}</span>`).join(' ') || '<span class="text-gray" style="font-size:12px">Nenhuma página</span>';
+    return `<tr>
+      <td><b>${Utils.escHtml(u.username)}</b>${u.id === meuId ? ' <span class="badge badge-blue" style="font-size:10px">você</span>' : ''}</td>
+      <td>${Utils.escHtml(u.nome || '—')}</td>
+      <td><span class="badge ${u.role === 'admin' ? 'badge-gold' : 'badge-gray'}">${u.role === 'admin' ? 'Administrador' : 'Usuário'}</span></td>
+      <td style="max-width:280px"><div style="display:flex;flex-wrap:wrap;gap:4px">${paginasBadges}</div></td>
+      <td>${u.ativo ? '<span class="badge badge-green">Ativo</span>' : '<span class="badge badge-gray">Desativado</span>'}</td>
+      <td class="td-actions">
+        <button class="btn btn-outline btn-sm" onclick="openModalUsuario('${u.id}')">✎</button>
+        ${u.id === meuId ? '' : (u.ativo
+          ? `<button class="btn btn-sm" style="background:#FEE2E2;color:#B91C1C" onclick="desativarUsuarioUI('${u.id}')">Desativar</button>`
+          : `<button class="btn btn-sm" style="background:#DCFCE7;color:#16A34A" onclick="reativarUsuarioUI('${u.id}')">Reativar</button>`)}
+      </td>
+    </tr>`;
+  }).join('');
+
+  return '<div class="card"><div class="card-body">' +
+    '<div class="flex-between mb-16">' +
+      '<div class="section-title" style="margin-bottom:0">Usuários do sistema</div>' +
+      '<button class="btn btn-primary btn-sm" onclick="openModalUsuario()">+ Novo usuário</button>' +
+    '</div>' +
+    '<div class="table-wrapper"><table>' +
+      '<thead><tr><th>Login</th><th>Nome</th><th>Perfil</th><th>Páginas liberadas</th><th>Status</th><th></th></tr></thead>' +
+      '<tbody>' + (rows || '<tr><td colspan="6" class="text-gray" style="text-align:center;padding:24px">Nenhum usuário cadastrado.</td></tr>') + '</tbody>' +
+    '</table></div>' +
+  '</div></div>';
+}
+
+async function openModalUsuario(id = null) {
+  let v = {};
+  if (id) {
+    const usuarios = await Auth.listarUsuarios();
+    v = usuarios.find(u => u.id === id) || {};
+  }
+  const paginasChk = Object.entries(PAGINA_LABELS).map(([key, label]) => `
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:4px 0">
+      <input type="checkbox" name="paginas" value="${key}" ${(v.paginas || []).includes(key) ? 'checked' : ''}/> ${label}
+    </label>`).join('');
+
+  openModal(id ? 'Editar usuário' : 'Novo usuário', `
+  <form id="formUsuario" onsubmit="salvarUsuarioForm(event,'${id || ''}')">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Login (usuário) *</label>
+        <input class="form-control" name="username" value="${Utils.escHtml(v.username || '')}" ${id ? 'disabled' : ''} required placeholder="ex: joao.silva"/></div>
+      <div class="form-group"><label class="form-label">Nome</label>
+        <input class="form-control" name="nome" value="${Utils.escHtml(v.nome || '')}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">${id ? 'Nova senha (deixe em branco para manter)' : 'Senha *'}</label>
+      <input class="form-control" type="password" name="senha" minlength="6" ${id ? '' : 'required'} placeholder="Mínimo 6 caracteres"/></div>
+    <div class="form-group"><label class="form-label">Perfil</label>
+      <div style="display:flex;gap:16px;margin-top:6px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
+          <input type="radio" name="role" value="user" ${v.role !== 'admin' ? 'checked' : ''} onchange="document.getElementById('paginasUsuarioBox').style.display='block'"/> Usuário (páginas específicas)
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
+          <input type="radio" name="role" value="admin" ${v.role === 'admin' ? 'checked' : ''} onchange="document.getElementById('paginasUsuarioBox').style.display='none'"/> Administrador (acesso total)
+        </label>
+      </div>
+    </div>
+    <div class="form-group" id="paginasUsuarioBox" style="display:${v.role === 'admin' ? 'none' : 'block'}">
+      <label class="form-label">Páginas liberadas</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--border);border-radius:8px;padding:8px 14px">${paginasChk}</div>
+    </div>
+    <button type="submit" class="btn btn-primary w-full">${id ? 'Salvar' : 'Criar usuário'}</button>
+  </form>`, 'modal-lg');
+}
+
+async function salvarUsuarioForm(e, id) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const dados = {
+    id: id || undefined,
+    username: fd.get('username'),
+    nome: fd.get('nome'),
+    senha: fd.get('senha'),
+    role: fd.get('role'),
+    paginas: fd.getAll('paginas'),
+  };
+  const { ok, erro } = await Auth.salvarUsuario(dados);
+  if (!ok) return Utils.showToast(erro, 'error');
+  closeModal();
+  Utils.showToast(id ? 'Usuário atualizado!' : 'Usuário criado!');
+  navigate('configuracoes');
+}
+
+async function desativarUsuarioUI(id) {
+  if (!confirm('Desativar este usuário? Ele não conseguirá mais entrar no sistema.')) return;
+  const { ok, erro } = await Auth.desativarUsuario(id);
+  if (!ok) return Utils.showToast(erro, 'error');
+  Utils.showToast('Usuário desativado');
+  navigate('configuracoes');
+}
+
+async function reativarUsuarioUI(id) {
+  const { ok, erro } = await Auth.reativarUsuario(id);
+  if (!ok) return Utils.showToast(erro, 'error');
+  Utils.showToast('Usuário reativado');
+  navigate('configuracoes');
 }
 
 async function licRevalidar() {
@@ -754,225 +898,6 @@ async function salvarMsgCobranca() {
   if (!msg) return Utils.showToast('Digite uma mensagem','warn');
   await DB.save('meta',{key:'msgCobranca',value:msg});
   Utils.showToast('Mensagem salva!');
-}
-
-// ── BACKUP PAGE ───────────────────────────────────────────────────────
-async function renderBackup() {
-  const [lastBackup, cfg, lastChange, historico, dirMeta] = await Promise.all([
-    Backup.lastBackupDate(),
-    Backup._getSettings(),
-    DB.getById('meta', 'lastDataChangeAt'),
-    DB.getAll('backupHistorico'),
-    DB.getById('meta', 'backupDirHandle'),
-  ]);
-
-  const temPasta   = !!dirMeta?.value;
-  const suportaFSA = !!window.showDirectoryPicker;
-
-  // Ordena histórico do mais recente para o mais antigo
-  const hist = [...historico].sort((a,b) => b.createdAt.localeCompare(a.createdAt));
-
-  // Status indicador
-  const diffDias = lastBackup ? (Date.now()-new Date(lastBackup).getTime())/86400000 : Infinity;
-  let statusCls, statusTxt;
-  if      (diffDias < 1)    { statusCls='badge-green';  statusTxt='Hoje'; }
-  else if (diffDias < 3)    { statusCls='badge-yellow'; statusTxt=`Há ${Math.floor(diffDias)}d`; }
-  else if (diffDias < 7)    { statusCls='badge-orange'; statusTxt=`Há ${Math.floor(diffDias)}d`; }
-  else                      { statusCls='badge-red';    statusTxt='Atrasado'; }
-
-  // Tipo badges
-  const tipoCls = {
-    'Manual':              'badge-blue',
-    'Automático':          'badge-green',
-    'Antes de importar':   'badge-yellow',
-    'Antes de excluir':    'badge-orange',
-    'Antes de restaurar':  'badge-orange',
-    'Backup por excursão': 'badge-gray',
-  };
-
-  const histRows = hist.map(h => `
-    <div class="backup-hist-item">
-      <div class="backup-hist-main">
-        <div class="backup-hist-nome">${Utils.escHtml(h.nomeArquivo)}</div>
-        <div class="backup-hist-meta">
-          <span class="badge ${tipoCls[h.tipo]||'badge-gray'}" style="font-size:11px">${h.tipo}</span>
-          <span class="text-gray" style="font-size:12px">${Utils.formatDatetime(h.createdAt)}</span>
-          <span class="text-gray" style="font-size:12px">${h.tamanho||''}</span>
-          <span class="badge ${h.status==='gerado'?'badge-green':'badge-gray'}" style="font-size:11px">${h.status}</span>
-        </div>
-      </div>
-      <div class="backup-hist-actions">
-        ${h.conteudo
-          ? `<button class="btn btn-outline btn-sm" onclick="baixarDoHistorico('${h.id}')">↓ Baixar</button>
-             <button class="btn btn-outline btn-sm" onclick="Backup.restaurarDoHistorico('${h.id}')">↺ Restaurar</button>`
-          : ''}
-        <button class="btn btn-sm" style="background:#FEE2E2;color:#B91C1C" onclick="excluirDoHistorico('${h.id}')">✕</button>
-      </div>
-    </div>`).join('');
-
-  return `
-  <div class="page-header">
-    <div>
-      <h1>Backup de Dados</h1>
-      <p class="page-header-sub">Proteção total contra perda de dados</p>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span class="badge ${statusCls}">Último backup: ${statusTxt}</span>
-      <button class="btn btn-primary" onclick="Backup.exportar()">
-        <svg viewBox="0 0 24 24"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/></svg>
-        Fazer backup agora
-      </button>
-    </div>
-  </div>
-
-  <!-- CARDS RÁPIDOS -->
-  <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">
-    <div class="stat-card">
-      <div class="stat-label">Último backup</div>
-      <div class="stat-value ${diffDias<1?'green':diffDias<7?'orange':'red'}" style="font-size:16px">${lastBackup?Utils.formatDatetime(lastBackup):'Nunca'}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Backup automático</div>
-      <div class="stat-value" style="font-size:16px">${cfg.ultimoBackupAutomaticoEm?Utils.formatDatetime(cfg.ultimoBackupAutomaticoEm):'Nunca'}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Última alteração</div>
-      <div class="stat-value" style="font-size:16px">${lastChange?.value?Utils.formatDatetime(lastChange.value):'—'}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Backups salvos</div>
-      <div class="stat-value blue">${hist.length} / ${cfg.maxBackups||10}</div>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
-
-    <!-- HISTÓRICO -->
-    <div>
-      <div class="section-title" style="margin-bottom:14px">Últimos backups</div>
-      ${hist.length === 0
-        ? `<div class="empty-state" style="padding:32px"><h3>Nenhum backup ainda</h3><p>Faça o primeiro backup agora.</p></div>`
-        : `<div class="backup-hist-list">${histRows}</div>`
-      }
-    </div>
-
-    <!-- SIDEBAR DE CONFIGURAÇÕES + AÇÕES -->
-    <div style="display:flex;flex-direction:column;gap:16px">
-
-      <!-- Exportar -->
-      <div class="card"><div class="card-body">
-        <div class="section-title">Exportar</div>
-        <p class="text-gray mt-8" style="font-size:13px">Baixa um arquivo <code>.json</code> com todos os dados.</p>
-        <button class="btn btn-primary w-full mt-16" onclick="Backup.exportar()">
-          <svg viewBox="0 0 24 24"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/></svg>
-          Fazer backup agora
-        </button>
-      </div></div>
-
-      <!-- Importar -->
-      <div class="card"><div class="card-body">
-        <div class="section-title">Importar</div>
-        <p class="text-gray mt-8" style="font-size:13px">Restaura dados de um arquivo <code>.json</code>.</p>
-        <p class="text-red mt-4" style="font-size:12px">⚠️ Um backup atual será feito antes de substituir os dados.</p>
-        <label class="btn btn-outline w-full mt-16" style="cursor:pointer">
-          <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
-          Selecionar arquivo .json
-          <input type="file" accept=".json" style="display:none" onchange="importarBackupPage(this)"/>
-        </label>
-      </div></div>
-
-      <!-- Pasta de backup -->
-      <div class="card"><div class="card-body">
-        <div class="section-title">Pasta de backup</div>
-        ${!suportaFSA
-          ? `<p class="text-gray mt-8" style="font-size:13px">Seu navegador não suporta seleção de pasta automática. Os backups serão baixados como arquivo.</p>`
-          : temPasta
-          ? `<p class="text-green mt-8" style="font-size:13px">✓ Pasta configurada. Backups automáticos serão salvos nela.</p>
-             <button class="btn btn-outline w-full mt-12" onclick="Backup.escolherPasta()">Trocar pasta</button>`
-          : `<p class="text-gray mt-8" style="font-size:13px">Escolha uma pasta para salvar os backups automáticos diretamente.</p>
-             <button class="btn btn-outline w-full mt-12" onclick="Backup.escolherPasta()">Escolher pasta de backup</button>`
-        }
-      </div></div>
-
-      <!-- Configurações -->
-      <div class="card"><div class="card-body">
-        <div class="section-title">Configurações</div>
-        <div class="form-group mt-12">
-          <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
-            Backup automático
-            <label class="toggle-switch">
-              <input type="checkbox" id="cfgAutoAtivo" ${cfg.automaticoAtivo?'checked':''} onchange="salvarCfgBackup()"/>
-              <span class="toggle-thumb"></span>
-            </label>
-          </label>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Frequência</label>
-          <select class="form-control" id="cfgFreq" onchange="salvarCfgBackup()">
-            <option value="diario"  ${cfg.frequencia==='diario' ?'selected':''}>Diário</option>
-            <option value="3dias"   ${cfg.frequencia==='3dias'  ?'selected':''}>A cada 3 dias</option>
-            <option value="semanal" ${cfg.frequencia==='semanal'?'selected':''}>Semanal</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Máx. backups guardados</label>
-          <input class="form-control" type="number" id="cfgMax" min="3" max="30" value="${cfg.maxBackups||10}" onchange="salvarCfgBackup()"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
-            Salvar conteúdo no histórico
-            <label class="toggle-switch">
-              <input type="checkbox" id="cfgConteudo" ${cfg.salvarConteudoNoHistorico?'checked':''} onchange="salvarCfgBackup()"/>
-              <span class="toggle-thumb"></span>
-            </label>
-          </label>
-          <div class="form-hint">Permite baixar/restaurar direto da lista acima.</div>
-        </div>
-      </div></div>
-
-    </div>
-  </div>
-
-  <div class="backup-info-card mt-24">
-    <div class="fw-600 mb-8">ℹ️ Sobre o armazenamento</div>
-    <p style="font-size:14px;color:#667085">Todos os dados ficam no <b>navegador</b> deste computador (IndexedDB). Se limpar o cache ou trocar de computador, os dados serão perdidos. Exporte o backup regularmente e guarde em local seguro.</p>
-  </div>`;
-}
-
-async function salvarCfgBackup() {
-  const cfg = await Backup._getSettings();
-  cfg.automaticoAtivo           = document.getElementById('cfgAutoAtivo')?.checked ?? true;
-  cfg.frequencia                = document.getElementById('cfgFreq')?.value || 'diario';
-  cfg.maxBackups                = parseInt(document.getElementById('cfgMax')?.value) || 10;
-  cfg.salvarConteudoNoHistorico = document.getElementById('cfgConteudo')?.checked ?? true;
-  await Backup._saveSettings(cfg);
-  Utils.showToast('Configurações salvas!');
-}
-
-async function baixarDoHistorico(id) {
-  const item = await DB.getById('backupHistorico', id);
-  if (!item?.conteudo) { Utils.showToast('Conteúdo não disponível.', 'warn'); return; }
-  const blob = new Blob([item.conteudo], { type: 'application/json' });
-  Utils.downloadBlob(blob, item.nomeArquivo);
-  Utils.showToast('Arquivo baixado!');
-}
-
-async function excluirDoHistorico(id) {
-  if (!confirm('Remover este item do histórico?')) return;
-  await DB.remove('backupHistorico', id);
-  Utils.showToast('Removido do histórico');
-  navigate('backup');
-}
-
-
-async function importarBackupPage(input) {
-  if (!input.files[0]) return;
-  const file = input.files[0];
-  input.value = '';
-  await Backup.modalBackupObrigatorio('Antes de importar', async () => {
-    await Backup.importar(file);
-    navigate('dashboard');
-  });
 }
 
 // ── IMPRIMIR / CSV ────────────────────────────────────────────────────
@@ -1675,7 +1600,7 @@ async function abrirUnificadorClientes(uid) {
     </div>`;
 
   openModal('Unificar cadastros duplicados', `
-    <div style="background:rgba(20,83,155,.06);border:1.5px solid rgba(20,83,155,.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:var(--dark)">
+    <div style="background:rgba(15,118,110,.06);border:1.5px solid rgba(15,118,110,.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:var(--dark)">
       <b>O que acontece ao unificar:</b>
       <ul style="margin:8px 0 0 16px;display:flex;flex-direction:column;gap:4px">
         <li>Ambas as excursões e <b>todos os pagamentos</b> são mantidos</li>
