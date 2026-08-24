@@ -70,9 +70,9 @@ async function renderDashboard() {
         <p style="color:var(--gray);font-size:15px;max-width:400px;margin:0 auto">Organize excursões, passageiros e pagamentos. Comece criando sua primeira excursão.</p>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-        <button class="btn btn-primary" style="padding:12px 28px;font-size:15px" onclick="openModalExcursao()">+ Nova excursão</button>
+        
       </div>
-    </div>`;
+    </div>`; // <button class="btn btn-primary" style="padding:12px 28px;font-size:15px" onclick="openModalExcursao()">+ Nova excursão</button> linha 73
 
   // Armazena dados para os gráficos (script inline não executa via innerHTML)
   window._dashED  = excDados;
@@ -80,6 +80,8 @@ async function renderDashboard() {
   window._dashPCT = pctRecebido;
     
 // A partir daqui é a declaração dos dashs no cod, já fica na aba de dashboards
+
+//<button class="btn btn-primary btn-sm" onclick="openModalExcursao()">+ Nova excursão</button> linhas 92
   return `
   <div class="dash-header">
     <div>
@@ -87,7 +89,7 @@ async function renderDashboard() {
       <p class="dash-sub">${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-primary btn-sm" onclick="openModalExcursao()">+ Nova excursão</button>
+      
     </div>
   </div>
 
@@ -294,8 +296,9 @@ async function renderExcursoes() {
     <div class="empty-state">
       <svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>
       <h3>Nenhuma viagem</h3><p>Crie sua primeira viagem.</p>
-      <button class="btn btn-primary mt-16" onclick="openModalExcursao()">+ Nova viagem</button>
+      
     </div>`;
+    // <button class="btn btn-primary mt-16" onclick="openModalExcursao()">+ Nova viagem</button> 
   const today   = Utils.today();
   const sorted  = [...excursoes].sort((a,b)=>(a.dataSaida||'9999').localeCompare(b.dataSaida||'9999'));
   const ativas  = sorted.filter(e => !e.dataSaida || e.dataSaida >= today);
@@ -400,9 +403,9 @@ async function renderExcursao() {
     </div>
   </div>
   <div class="tabs">
-    ${tabs.map((t,i) => `<button class="tab-btn ${t===cur?'active':''}" onclick="navigate('excursao',{excursaoId:'${exc.id}',tab:'${t}'})">${tabLabels[i]}</button>`).join('')}
+    
   </div>
-  <div id="tabContent">${tabContent}</div>`;
+  <div id="tabContent">${tabContent}</div>`; // ${tabs.map((t,i) => `<button class="tab-btn ${t===cur?'active':''}" onclick="navigate('excursao',{excursaoId:'${exc.id}',tab:'${t}'})">${tabLabels[i]}</button>`).join('')} linha 406
 }
 
 // ── TAB: PACOTES ────────────────────────────────────────────────────── Dentro da aba de excursões, opção de pacotes

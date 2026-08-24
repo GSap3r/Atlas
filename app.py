@@ -72,5 +72,3 @@ if __name__ == "__main__":
     inicializar_banco()
     app.run(debug=True, port=3000)
 
-# consegui usar o git
-# coinsegui 
