@@ -253,7 +253,7 @@ async function render() {
 
   const pageMap = {
     dashboard:       ['Dashboard',          renderDashboard],
-    excursoes:       ['Excursões',          renderExcursoes],
+    excursoes:       ['Viagens',          renderExcursoes],
     excursao:        [null,                 renderExcursao],
     cobrancas:       ['Cobranças',          renderCobrancas], // tirar
     auditoria:       ['Auditoria Financeira', renderAuditoria], // tirar

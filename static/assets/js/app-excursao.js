@@ -67,7 +67,7 @@ async function renderDashboard() {
       <img src="assets/img/logo.png" alt="Atlas" style="width:72px;height:72px;border-radius:18px;box-shadow:var(--shadow-md)"/>
       <div>
         <h1 style="font-size:28px;font-weight:700;color:var(--dark);margin-bottom:8px">Bem-vindo ao Atlas</h1>
-        <p style="color:var(--gray);font-size:15px;max-width:400px;margin:0 auto">Organize excursões, passageiros e pagamentos. Comece criando sua primeira excursão.</p>
+        <p style="color:var(--gray);font-size:15px;max-width:400px;margin:0 auto">Organize viagens, passageiros e pagamentos. Comece criando sua primeira excursão.</p>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
         
@@ -163,7 +163,7 @@ async function renderDashboard() {
   <div class="dash-bottom-row">
     <div class="dash-section-card">
       <div class="dash-chart-header">
-        <div class="dash-chart-title">Próximas Excursões</div>
+        <div class="dash-chart-title">Próximas Viagens</div>
         <button class="btn btn-ghost btn-sm" onclick="navigate('excursoes')">Ver todas →</button>
       </div>
       ${proximas.length === 0 ? '<p class="text-gray" style="font-size:14px;padding:16px 0">Nenhuma excursão futura.</p>' : proximas.map(e => {
@@ -213,7 +213,7 @@ async function renderDashboard() {
     <div class="dash-section-card">
       <div class="dash-chart-header">
         <div class="dash-chart-title">Resumo Financeiro</div>
-        <div class="dash-chart-sub">Todas as excursões</div>
+        <div class="dash-chart-sub">Todas as Viagens</div>
       </div>
       ${[
         ['Receita prevista', receitaPrev, '#0F766E', false],
