@@ -25,6 +25,11 @@ const Utils = (() => {
     return new Date().toISOString().split('T')[0];
   }
 
+  function capitalizar(s) {
+    s = String(s || '');
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
   function escHtml(s) {
     return String(s || '').replace(/[&<>"']/g, c =>
       ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])
@@ -256,7 +261,7 @@ const Utils = (() => {
   }
 
   return {
-    formatCurrency, formatDate, formatDatetime, today, escHtml,
+    formatCurrency, formatDate, formatDatetime, today, escHtml, capitalizar,
     statusBadge, statusSelect, genSeatRows,
     tipoAdultoPadrao, getTipo,
     calcPassageiroFinanceiro, calcExcursaoFinanceiro, calcularValorConta,
