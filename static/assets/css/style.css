@@ -245,6 +245,8 @@ td.sv-currency { font-size: 14px !important; }
 .btn-gold:hover { opacity: 1; background: #A8431F; }
 .btn-outline { background: transparent; color: var(--dark); border: 1.5px solid var(--border); }
 .btn-outline:hover { opacity: 1; background: var(--bg); border-color: #c8cfd9; }
+.btn-ghost { background: transparent; color: var(--blue); }
+.btn-ghost:hover { opacity: 1; background: rgba(15,118,110,.08); }
 .btn-danger { background: var(--red); color: #fff; }
 .btn-danger:hover { opacity: 1; background: #d63027; }
 .btn-success { background: var(--green); color: #fff; }

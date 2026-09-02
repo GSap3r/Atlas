@@ -162,6 +162,7 @@ function drawDashboardCharts(ED, SC, PCT) {
       const v=(maxV*i/4);
       ctx.fillText(v>=1000?(v/1000).toFixed(0)+'k':v.toFixed(0), pad.l-4, y+3);
     }
+    const hitRects = [];
     ED.forEach((d,i)=>{
       const cx  = pad.l + i*grp + grp/2;
       const x0  = cx - bW - sp/2;
@@ -177,7 +178,19 @@ function drawDashboardCharts(ED, SC, PCT) {
         ctx.fillText(words[0], cx, H-pad.b+11);
         ctx.fillText(words.slice(1).join(' '), cx, H-pad.b+21);
       } else { ctx.fillText(d.nome, cx, H-pad.b+13); }
+      if (d.id) hitRects.push({ id: d.id, x0: cx-grp/2, x1: cx+grp/2 });
     });
+    cv._atlasHitRects = hitRects;
+    if (!cv.dataset.clickBound) {
+      cv.dataset.clickBound = '1';
+      cv.style.cursor = 'pointer';
+      cv.addEventListener('click', (e) => {
+        const rect = cv.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const hit = (cv._atlasHitRects||[]).find(r => x >= r.x0 && x <= r.x1);
+        if (hit) navigate('excursao', { excursaoId: hit.id, tab: 'passageiros' });
+      });
+    }
   }
 
   function _donut() {

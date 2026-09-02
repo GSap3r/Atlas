@@ -40,10 +40,16 @@ async function renderDashboard() {
       const rec   = pagsE.reduce((s,p)=>s+(parseFloat(p.valor)||0),0);
       const prev  = pag.reduce((s,p)=>s+(parseFloat(p.valorFinal != null ? p.valorFinal : p.valorCombinado)||0),0);
       return {
+        id: e.id,
         nome: e.nome.length > 14 ? e.nome.slice(0,13)+'…' : e.nome,
         rec, prev, cor: e.cor||'#0F766E'
       };
     });
+
+  window._dashMonth = window._dashMonth || Utils.today().slice(0,7);
+  const finMes = await calcularFinanceiroMes(window._dashMonth);
+  const [anoMes, numMes] = window._dashMonth.split('-');
+  const nomeMesAtual = Utils.capitalizar(new Date(Number(anoMes), Number(numMes)-1, 1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}));
 
   const statusCount = {
     confirmado: passAtivos.filter(p=>p.status==='confirmado').length,
@@ -93,13 +99,10 @@ async function renderDashboard() {
     </div>
   </div>
 
-  <div class="dash-kpi-row">
+  <div class="dash-kpi-row" style="grid-template-columns:repeat(2,1fr);max-width:520px">
     ${[
-      { icon:'M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z', bg:'#EAF6F5', cor:'#0F766E', val: excAtivas.length + '<span style="font-size:13px;font-weight:400;color:var(--gray);margin-left:4px">/ '+excursoes.length+'</span>', lbl:'Excursões ativas', trend: excPassadas.length+'d concluídas', tcls:'trend-gray' },
+      { icon:'M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z', bg:'#EAF6F5', cor:'#0F766E', val: excAtivas.length + '<span style="font-size:13px;font-weight:400;color:var(--gray);margin-left:4px">/ '+excursoes.length+'</span>', lbl:'Viagens ativas', trend: excPassadas.length+'d concluídas', tcls:'trend-gray' },
       { icon:'M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z', bg:'#F0FDF4', cor:'#12B76A', val: passAtivos.length, lbl:'Passageiros', trend: confirmados+' confirmados', tcls:'trend-green' },
-      { icon:'M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z', bg:'#F0FDF4', cor:'#12B76A', val: Utils.formatCurrency(recebido), lbl:'Total recebido', trend: pctRecebido.toFixed(0)+'% da meta', tcls:'trend-green', currency:true },
-      { icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z', bg:'#FFFAEB', cor:'#F79009', val: Utils.formatCurrency(aReceber), lbl:'A receber', trend: pendentes+' pendentes', tcls:'trend-orange', currency:true },
-      { icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z', bg:'#FEF3F2', cor:'#F04438', val: Utils.formatCurrency(contasPend), lbl:'Contas a pagar', trend: pctCustos.toFixed(0)+'% pago', tcls:'trend-gray', currency:true },
     ].map(k=>`
       <div class="dash-kpi">
         <div class="dash-kpi-icon" style="background:${k.bg};color:${k.cor}">
@@ -111,15 +114,51 @@ async function renderDashboard() {
         </div>
         <div class="dash-kpi-trend ${k.tcls}">${k.trend}</div>
       </div>`).join('')}
-    <div class="dash-kpi dash-kpi-lucro">
+  </div>
+
+  <div class="flex-between" style="margin:4px 0 12px">
+    <div class="section-title" style="margin-bottom:0">Financeiro do mês</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn btn-ghost btn-sm" onclick="mudarMesDash(-1)" title="Mês anterior">←</button>
+      <b style="min-width:150px;text-align:center;font-size:14px;color:var(--dark)">${nomeMesAtual}</b>
+      <button class="btn btn-ghost btn-sm" onclick="mudarMesDash(1)" title="Próximo mês">→</button>
+    </div>
+  </div>
+
+  <div class="dash-kpi-row">
+    ${[
+      { cat:'emitidos',  icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z', bg:'#EAF6F5', cor:'#0F766E', val: finMes.emitidos.valor,  count: finMes.emitidos.itens.length,  lbl:'Emitidas' },
+      { cat:'recebidos', icon:'M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z', bg:'#F0FDF4', cor:'#12B76A', val: finMes.recebidos.valor, count: finMes.recebidos.itens.length, lbl:'Recebidas' },
+      { cat:'pendentes', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z', bg:'#FFFAEB', cor:'#F79009', val: finMes.pendentes.valor, count: finMes.pendentes.itens.length, lbl:'Pendentes' },
+      { cat:'atrasados', icon:'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z', bg:'#FEF3F2', cor:'#F04438', val: finMes.atrasados.valor, count: finMes.atrasados.itens.length, lbl:'Atrasadas' },
+    ].map(k=>`
+      <div class="dash-kpi" style="cursor:pointer" onclick="abrirDetalheFinanceiro('${k.cat}')">
+        <div class="dash-kpi-icon" style="background:${k.bg};color:${k.cor}">
+          <svg viewBox="0 0 24 24"><path d="${k.icon}"/></svg>
+        </div>
+        <div class="dash-kpi-body">
+          <div class="dash-kpi-val dash-kpi-currency">${Utils.formatCurrency(k.val)}</div>
+          <div class="dash-kpi-lbl">${k.count} ${k.lbl}</div>
+        </div>
+      </div>`).join('')}
+    <div class="dash-kpi" style="cursor:pointer" onclick="abrirDetalheFinanceiro('lucro')">
+      <div class="dash-kpi-icon" style="background:${finMes.lucroReal>=0?'#F0FDF4':'#FEF3F2'};color:${finMes.lucroReal>=0?'#12B76A':'#F04438'}">
+        <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+      </div>
+      <div class="dash-kpi-body">
+        <div class="dash-kpi-val dash-kpi-currency ${finMes.lucroReal>=0?'':'text-red'}">${Utils.formatCurrency(finMes.lucroReal)}</div>
+        <div class="dash-kpi-lbl">Lucro real</div>
+      </div>
+    </div>
+    <div class="dash-kpi dash-kpi-lucro" style="cursor:pointer" onclick="abrirDetalheFinanceiro('lucro')">
       <div class="dash-kpi-icon" style="background:rgba(255,255,255,.2);color:#fff">
         <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
       </div>
       <div class="dash-kpi-body">
-        <div class="dash-kpi-val dash-kpi-currency" style="color:#fff">${Utils.formatCurrency(lucroPrev)}</div>
+        <div class="dash-kpi-val dash-kpi-currency" style="color:#fff">${Utils.formatCurrency(finMes.lucroPrevisto)}</div>
         <div class="dash-kpi-lbl" style="color:rgba(255,255,255,.75)">Lucro previsto</div>
       </div>
-      <div class="dash-kpi-trend" style="color:rgba(255,255,255,.65)">${lucroPrev>=0?'▲ positivo':'▼ atenção'}</div>
+      <div class="dash-kpi-trend" style="color:rgba(255,255,255,.65)">${finMes.lucroPrevisto>=0?'▲ positivo':'▼ atenção'}</div>
     </div>
   </div>
 
@@ -237,6 +276,140 @@ async function renderDashboard() {
     console.error('Dashboard error:', e);
     return '<div style="padding:32px;color:#F04438">Erro ao carregar dashboard: '+e.message+'</div>';
   }
+}
+
+// ── FINANCEIRO DO MÊS (dashboard) ──────────────────────────────────────
+function somarMes(mes, delta) {
+  const [y, m] = mes.split('-').map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+
+async function calcularFinanceiroMes(mes) {
+  const [pagamentos, passageiros, excursoes, contas] = await Promise.all([
+    DB.getAll('pagamentos'), DB.getAll('passageiros'), DB.getAll('excursoes'), DB.getAll('contas'),
+  ]);
+  const passById = Object.fromEntries(passageiros.map(p => [p.id, p]));
+  const excById  = Object.fromEntries(excursoes.map(e => [e.id, e]));
+  const hoje = Utils.today();
+
+  const emitidos  = { itens: [], valor: 0 };
+  const recebidos = { itens: [], valor: 0 };
+  const pendentes = { itens: [], valor: 0 };
+  const atrasados = { itens: [], valor: 0 };
+
+  for (const pg of pagamentos) {
+    const pago    = pg.status === 'pago';
+    const dataRef = pago ? (pg.data || pg.vencimento) : (pg.vencimento || pg.data);
+    if (!dataRef || dataRef.slice(0, 7) !== mes) continue;
+    const pass = passById[pg.passageiroId];
+    const exc  = excById[pg.excursaoId] || excById[pass?.excursaoId];
+    const item = {
+      clienteNome: pass?.nome || '—',
+      viagemNome:  exc?.nome || '—',
+      data: dataRef,
+      valor: parseFloat(pg.valor) || 0,
+      forma: pg.forma,
+    };
+    emitidos.itens.push(item); emitidos.valor += item.valor;
+    if (pago) {
+      recebidos.itens.push(item); recebidos.valor += item.valor;
+    } else if (pg.vencimento && pg.vencimento < hoje) {
+      atrasados.itens.push(item); atrasados.valor += item.valor;
+    } else {
+      pendentes.itens.push(item); pendentes.valor += item.valor;
+    }
+  }
+  [emitidos, recebidos, pendentes, atrasados].forEach(b => b.itens.sort((a, b2) => a.data.localeCompare(b2.data)));
+
+  let custosPagosMes = 0, custosTotalMes = 0;
+  for (const c of contas) {
+    if (!c.vencimento || c.vencimento.slice(0, 7) !== mes) continue;
+    const v = parseFloat(c.valor) || 0;
+    custosTotalMes += v;
+    if (c.status === 'pago') custosPagosMes += v;
+  }
+
+  return {
+    emitidos, recebidos, pendentes, atrasados,
+    custosPagosMes, custosTotalMes,
+    lucroReal:     recebidos.valor - custosPagosMes,
+    lucroPrevisto: emitidos.valor  - custosTotalMes,
+  };
+}
+
+function mudarMesDash(delta) {
+  window._dashMonth = somarMes(window._dashMonth || Utils.today().slice(0, 7), delta);
+  navigate('dashboard');
+}
+
+const FIN_CATEGORIA_INFO = {
+  emitidos:  { titulo: 'Emitidas',  colData: 'Data',      mostrarForma: true  },
+  recebidos: { titulo: 'Recebidas', colData: 'Pago em',   mostrarForma: true  },
+  pendentes: { titulo: 'Pendentes', colData: 'Vence em',  mostrarForma: false },
+  atrasados: { titulo: 'Atrasadas', colData: 'Venceu em', mostrarForma: false },
+};
+
+async function abrirDetalheFinanceiro(categoria) {
+  const titulo = categoria === 'lucro' ? 'Lucro do mês' : FIN_CATEGORIA_INFO[categoria].titulo;
+  openModal(titulo, '<div id="finDetalheBody" style="min-height:120px;text-align:center;padding:32px;color:var(--gray)">Carregando...</div>', 'modal-lg', []);
+  await renderFinDetalheBody(categoria, window._dashMonth);
+}
+
+async function mudarMesFinDetalhe(categoria, mesAtual, delta) {
+  await renderFinDetalheBody(categoria, somarMes(mesAtual, delta));
+}
+
+async function renderFinDetalheBody(categoria, mes) {
+  const dados = await calcularFinanceiroMes(mes);
+  const box = document.getElementById('finDetalheBody');
+  if (!box) return; // modal foi fechado enquanto carregava
+
+  const [ano, numMes] = mes.split('-');
+  const nomeMes = Utils.capitalizar(new Date(Number(ano), Number(numMes) - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }));
+  const seletor = `
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px">
+      <button class="btn btn-outline btn-sm" onclick="mudarMesFinDetalhe('${categoria}','${mes}',-1)">← Mês anterior</button>
+      <b style="min-width:150px;text-align:center">${nomeMes}</b>
+      <button class="btn btn-outline btn-sm" onclick="mudarMesFinDetalhe('${categoria}','${mes}',1)">Próximo mês →</button>
+    </div>`;
+
+  if (categoria === 'lucro') {
+    box.innerHTML = seletor + `
+      <div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
+        <div class="stat-card"><div class="stat-label">Lucro real</div><div class="stat-value ${dados.lucroReal>=0?'green':'red'} sv-currency">${Utils.formatCurrency(dados.lucroReal)}</div></div>
+        <div class="stat-card"><div class="stat-label">Lucro previsto</div><div class="stat-value ${dados.lucroPrevisto>=0?'green':'red'} sv-currency">${Utils.formatCurrency(dados.lucroPrevisto)}</div></div>
+      </div>
+      <div class="table-wrapper" style="margin-top:4px"><table><tbody>
+        <tr><td>Recebido no mês</td><td class="text-green fw-600" style="text-align:right">${Utils.formatCurrency(dados.recebidos.valor)}</td></tr>
+        <tr><td>Custos pagos no mês</td><td class="fw-600" style="text-align:right">${Utils.formatCurrency(dados.custosPagosMes)}</td></tr>
+        <tr><td>Emitido no mês (previsto)</td><td class="text-blue fw-600" style="text-align:right">${Utils.formatCurrency(dados.emitidos.valor)}</td></tr>
+        <tr><td>Custo total do mês</td><td class="fw-600" style="text-align:right">${Utils.formatCurrency(dados.custosTotalMes)}</td></tr>
+      </tbody></table></div>`;
+    return;
+  }
+
+  const info   = FIN_CATEGORIA_INFO[categoria];
+  const bucket = dados[categoria];
+  const rows = bucket.itens.map(it => `<tr>
+    <td>${Utils.escHtml(it.clienteNome)}</td>
+    <td>${Utils.escHtml(it.viagemNome)}</td>
+    <td>${Utils.formatDate(it.data)}</td>
+    <td class="fw-600">${Utils.formatCurrency(it.valor)}</td>
+    ${info.mostrarForma ? `<td>${Utils.escHtml(it.forma || '—')}</td>` : ''}
+  </tr>`).join('');
+
+  box.innerHTML = seletor + `
+    <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
+      <div class="stat-card"><div class="stat-label">${info.titulo}</div><div class="stat-value">${bucket.itens.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Valor total</div><div class="stat-value sv-currency">${Utils.formatCurrency(bucket.valor)}</div></div>
+    </div>
+    ${bucket.itens.length
+      ? `<div class="table-wrapper"><table>
+          <thead><tr><th>Cliente</th><th>Viagem</th><th>${info.colData}</th><th>Valor</th>${info.mostrarForma ? '<th>Forma</th>' : ''}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>`
+      : '<p class="text-gray" style="text-align:center;padding:24px">Nenhum registro nesse mês.</p>'}`;
 }
 
 
