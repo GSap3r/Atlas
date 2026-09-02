@@ -692,8 +692,8 @@ async function renderConfiguracoes() {
 
   const tabBar =
     '<div style="border-bottom:1px solid #E4E7EC;display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap">' +
-      '<button style="' + (tab === 'licenca'   ? sAtivo : sInativo) + '" data-cfg-tab="licenca">Licenca</button>' +
-      '<button style="' + (tab === 'mensagens' ? sAtivo : sInativo) + '" data-cfg-tab="mensagens">Mensagens</button>' +
+      //'<button style="' + (tab === 'licenca'   ? sAtivo : sInativo) + '" data-cfg-tab="licenca">Licenca</button>' +
+      //'<button style="' + (tab === 'mensagens' ? sAtivo : sInativo) + '" data-cfg-tab="mensagens">Mensagens</button>' +
       '<button style="' + (tab === 'conta'     ? sAtivo : sInativo) + '" data-cfg-tab="conta">Minha conta</button>' +
       (Auth.isAdmin() ? '<button style="' + (tab === 'usuarios' ? sAtivo : sInativo) + '" data-cfg-tab="usuarios">Usuários</button>' : '') +
     '</div>';
@@ -770,9 +770,13 @@ async function salvarMinhaSenhaForm(e) {
 
 // ── USUÁRIOS (admin) ───────────────────────────────────────────────────
 const PAGINA_LABELS = {
-  dashboard: 'Dashboard', excursoes: 'Excursões', cobrancas: 'Cobranças',
-  auditoria: 'Auditoria', clientes: 'Clientes', tiposPassageiro: 'Tipos de Passageiro',
-  fornecedores: 'Fornecedores', vendedores: 'Vendedores', planejador: 'Planejador',
+  dashboard: 'Dashboard',
+  excursoes: 'Viagens', 
+  clientes: 'Clientes', 
+  tiposPassageiro: 'Tipos de Passageiro',
+  fornecedores: 'Fornecedores', 
+  vendedores: 'Vendedores', 
+  planejador: 'Planejador',
   configuracoes: 'Configurações',
 };
 
