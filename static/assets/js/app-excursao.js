@@ -372,7 +372,7 @@ async function renderExcursao() {
 
   let tabContent = '';
   if      (cur==='pacotes')     tabContent = renderTabPacotes(exc, excPacotes, passageiros, tipos);
-  else if (cur==='passageiros') tabContent = renderTabPassageiros(exc, passageiros, pagamentos, tipos, excPacotes, excReservas);
+  //else if (cur==='passageiros') tabContent = renderTabPassageiros(exc, passageiros, pagamentos, tipos, excPacotes, excReservas);
   else if (cur==='assentos')    tabContent = renderTabAssentos(exc, passageiros, tipos);
   else if (cur==='pagamentos')  tabContent = renderTabPagamentos(exc, passageiros, pagamentos);
   else if (cur==='contas')      tabContent = renderTabContas(exc, contas, tipos, passageiros, excPacotes, await DB.getAll('fornecedores'));
