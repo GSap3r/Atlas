@@ -9,6 +9,7 @@ services:
     name: atlas-site
     runtime: python
     plan: free
+    autoDeployTrigger: off
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --workers 1 --threads 4 --preload
     healthCheckPath: /
