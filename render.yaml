@@ -1,0 +1,39 @@
+databases:
+  - name: atlas-db
+    plan: free
+    databaseName: atlas
+    user: atlas
+
+services:
+  - type: web
+    name: atlas-site
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 4 --preload
+    healthCheckPath: /
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: atlas-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: atlas-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: atlas-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: atlas-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: atlas-db
+          property: password
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.6

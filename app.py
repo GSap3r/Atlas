@@ -68,7 +68,11 @@ def arquivos_estaticos(filename):
     return send_from_directory(STATIC_DIR, filename)
 
 
+# Roda tanto em `python app.py` (dev) quanto quando o gunicorn importa
+# este módulo em produção (Render, etc.) — nos dois casos o banco precisa
+# estar pronto antes do primeiro request.
+inicializar_banco()
+
 if __name__ == "__main__":
-    inicializar_banco()
-    app.run(debug=True, port=3000)
+    app.run(debug=True, port=int(os.getenv("PORT", 3000)))
 

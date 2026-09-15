@@ -13,7 +13,7 @@ def _config():
         "port": int(os.getenv("DB_PORT", "5432")),
         "dbname": os.getenv("DB_NAME", "atlas"),
         "user": os.getenv("DB_USER", "postgres"),
-        "password": os.getenv("DB_PASSWORD", "Eliasjr17"),
+        "password": os.getenv("DB_PASSWORD", "postgres"),
     }
 
 
