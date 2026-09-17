@@ -298,7 +298,12 @@ def _valid_uuid(value):
 def _to_sql(value, kind):
     if kind == "jsonb":
         return psycopg2.extras.Json(value) if value is not None else None
-    if value == "" and kind in ("int", "numeric", "date", "uuid"):
+    if kind == "uuid":
+        # Qualquer valor que não seja um UUID de verdade (vazio, ou o
+        # placeholder "__sem_excursao__" usado pelo frontend pra cliente
+        # avulso) vira NULL em vez de quebrar o INSERT/UPDATE no Postgres.
+        return value if _valid_uuid(value) else None
+    if value == "" and kind in ("int", "numeric", "date"):
         return None
     return value
 
